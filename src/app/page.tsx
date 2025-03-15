@@ -19,7 +19,7 @@ export default function Home() {
               <div className="md:w-1/2 flex justify-center md:justify-end mt-6 md:mt-0">
                 <div className="w-64 h-64 overflow-hidden border-4 border-white rounded-lg">
                 <Image 
-                  src="/nextjs-github-pages/profile_pic.jpeg" 
+                  src="/profile_pic.jpeg" 
                   alt="Janys Li" 
                   width={256} 
                   height={256} 

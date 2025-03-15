@@ -11,7 +11,7 @@ export default function AboutPage() {
           <div className="md:w-1/3">
             <div className="rounded-lg overflow-hidden">
               <img 
-                src="/nextjs-github-pages/dog_pic.jpg" 
+                src="/dog_pic.jpg" 
                 alt="Janys Li" 
                 className="w-3/4 h-auto object-cover rounded-lg"
               />
