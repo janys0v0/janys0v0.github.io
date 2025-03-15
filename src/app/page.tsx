@@ -11,7 +11,7 @@ export default function Home() {
           <div className="container mx-auto px-8 md:px-16 py-36 flex flex-col items-center justify-start h-full">
             <div className="flex flex-col md:flex-row items-center justify-between w-full">
               <div className="md:w-1/2">
-                <h1 className="text-6xl font-bold text-white text-center md:text-left mb-4 mt-16">Hi! I&apos;m Janys ''(Jiayang) Li :P</h1>
+                <h1 className="text-6xl font-bold text-white text-center md:text-left mb-4 mt-16">Hi! I&apos;m Janys (Jiayang) Li :P</h1>
                 <hr className="w-1/3 border-t border-gray-300 mb-8" />
                 <p className="text-xl text-gray-300 text-center md:text-left font-mono">Stats & Cogsci @ UCLA</p>
                 <p className="text-[#6699cc] text-center md:text-left font-mono">Hi! I am <text className="text-yellow-500">Janys</text>. I leverage <text className="text-pink-400">creative technologies</text> to answer interesting questions, from discovering business insights to understanding emotional flexibility.</p>
