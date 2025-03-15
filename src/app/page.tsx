@@ -4,10 +4,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col bg-gray-900">
-      <div className="flex-1">
-        
-        <BannerBackground>
+    <main>
           <div className="container mx-auto px-8 md:px-16 py-36 flex flex-col items-center justify-start h-full">
             <div className="flex flex-col md:flex-row items-center justify-between w-full">
               <div className="md:w-1/2">
@@ -47,12 +44,12 @@ export default function Home() {
                 </p>
                 <br></br>
                   <a 
-                    href="https://github.com/janys0v0" 
+                    href="/projects" 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition-colors"
                   >
-                  Visit My GitHub
+                  Visit My Projects
                   </a>
               </div>
             } />
@@ -82,10 +79,7 @@ export default function Home() {
               </div>
           } 
         />
-
           </div>
-        </BannerBackground>
-      </div>
     </main>
   );
 }

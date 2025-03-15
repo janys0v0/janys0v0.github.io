@@ -1,4 +1,5 @@
 import {NavBar} from "@/components/navbar";
+import {BannerBackground} from "@/components/BannerBackground";
 import "@/app/globals.css"; 
 
 export default function RootLayout({
@@ -10,9 +11,9 @@ export default function RootLayout({
         <html lang="en">
             <body>
                 <NavBar />
-                <div className="bg-black">
-                    {children}
-                </div>
+                <BannerBackground>
+                        {children}
+                </BannerBackground>
             </body>
         </html>
     );
