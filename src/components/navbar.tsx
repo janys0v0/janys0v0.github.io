@@ -25,15 +25,10 @@ export function NavBar() {
           Resume
         </Link>
         <Link 
-          href="/#my_skills"
+          href="/projects"
           className="text-white hover:text-gray-300 transition-colors"
         >
-          My Skills
-        </Link>
-        <Link 
-          href="/#my_projects"
-          className="text-white hover:text-gray-300 transition-colors"
-        >
+
           Projects
         </Link>
         <Link 

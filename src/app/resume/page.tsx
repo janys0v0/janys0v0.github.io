@@ -1,6 +1,6 @@
 export default function ResumePage() {
     return (
-        <main className="min-h-screen flex flex-col bg-gray-900">
+        <main>
             <div className="container mx-auto px-4 py-16">
                 <h1 className="text-5xl font-bold text-white text-center mb-5">Resume</h1>
                 <hr className="w-1/3 border-t border-gray-300 mb-8 mx-auto" />
