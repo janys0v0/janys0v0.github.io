@@ -30,28 +30,12 @@ export default function Home() {
 </div>,
 
 <div>
-  <h1>🔧 My Skillset</h1>
-  <p className = "intro-subtitle text-sm font-normal">
-    - <span className="text-pink-400">Programming: </span>Python, R, SQL, C++, HTML, CSS, React <br/>
-    - <span className="text-purple-400">Data Processing & Visualization: </span>Excel, Databricks, Tableau, Power BI <br/>
-    - <span className="text-green-400">Machine Learning: </span>PyTorch, TensorFlow <br/>
-    - <span className="text-blue-400">User Experience: </span>Figma, A/B Testing
-    </p>
-</div>,
-<div>
-<h1>❓ Where to find me</h1>
-  <p className = "intro-subtitle text-sm font-normal">
-    - <span className="text-yellow-400">Email: </span>janysli@g.harvard.edu<br/>
-    - <span className="text-cyan-400">Location: </span>Boston, MA <br/>
-    - <span className="text-emerald-400">If you can't find me, I'm probably: </span>🏂 On mountains or 🧗‍♀️ on walls<br/>
-    </p>
-</div>,
-<div>
 <h1 className="text-2xl">This site was built with...</h1>
-  <p className = "intro-subtitle text-sm font-normal">
-    - Interactive website with <span className="text-orange-400">Cursor</span>!<br/>
-    - Beautiful styling with <span className="text-blue-400">Tailwind CSS</span>!<br/>
-    - Smooth animations with <span className="text-red-400">GSAP</span>!<br/>
+  <p className = "intro-subtitle text-xs font-normal">
+    - My cool design 😎<br/>
+    - 95% Codebase with <span className="text-orange-400">Cursor</span>!<br/>
+    - Beautiful styling with <span className="text-blue-400">Tailwind CSS</span><br/>
+    - Smooth animations with <span className="text-red-400">GSAP</span><br/>
     </p>
     <div className="tech-logos-container">
       <img src="https://cdn.freelogovectors.net/wp-content/uploads/2025/06/cursor-logo-freelogovectors.net_.png" alt="Cursor Logo" className="tech-logo" />
@@ -61,7 +45,28 @@ export default function Home() {
       <img src="https://www.freelogovectors.net/wp-content/uploads/2023/02/react-logo-freelogovectors.net_.png" alt="React Logo" className="tech-logo" />
       <img src="https://global.discourse-cdn.com/sitepoint/original/3X/b/5/b59a78e2ed76c705f3c0dcb300f3f222aefdcd99.png" alt="TypeScript Logo" className="tech-logo" />
     </div>
+    <p className="text-white text-xs mt-4 opacity-60 text-center">© 2025 Janys Li. All rights reserved.</p>
 </div>,
+
+<div>
+<h1>❓ Where to find me</h1>
+  <p className = "intro-subtitle text-sm font-normal">
+    - <span className="text-yellow-400">Email: </span>janysli@g.harvard.edu<br/>
+    - <span className="text-cyan-400">Location: </span>Boston, MA <br/>
+    - <span className="text-emerald-400">If you can't find me, I'm probably: </span>🏂 On mountains or 🧗‍♀️ on walls<br/>
+    </p>
+</div>,
+
+<div>
+  <h1>🔧 My Skillset</h1>
+  <p className = "intro-subtitle text-sm font-normal">
+    - <span className="text-pink-400">Programming: </span>Python, R, SQL, C++, HTML, CSS, React <br/>
+    - <span className="text-purple-400">Data Processing & Visualization: </span>Excel, Databricks, Tableau, Power BI <br/>
+    - <span className="text-green-400">Machine Learning: </span>PyTorch, TensorFlow <br/>
+    - <span className="text-blue-400">User Experience: </span>Figma, A/B Testing
+    </p>
+</div>,
+
     <div className="profile-image-container" key="profile">
     <div className="profile-image-wrapper">
       <div className="profile-image-item">
@@ -86,6 +91,7 @@ export default function Home() {
       </div>
     </div>
   </div>,
+  
   ];
 
   useEffect(() => {
@@ -182,6 +188,7 @@ export default function Home() {
 
       {/* Social Media Panel */}
       <SocialPanel />
+
 
     </main>
   );
