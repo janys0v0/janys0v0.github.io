@@ -44,7 +44,7 @@ body {
 }
 
 .intro-description {
-  @apply text-[#6699cc] text-center md:text-left font-mono mb-0 text-sm mt-8;
+  @apply text-gray-400 text-center md:text-left font-mono mb-0 text-sm mt-8;
 }
 
 .profile-image-container {
@@ -104,6 +104,18 @@ body {
   @apply absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/80 text-white text-xs rounded whitespace-nowrap pointer-events-none;
 }
 
+.portfolio-group {
+  @apply flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-2 border border-white/20 hover:bg-white/15 transition-all duration-200 cursor-pointer;
+}
+
+.portfolio-group .social-icon {
+  @apply w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200;
+}
+
+.portfolio-text {
+  @apply text-white text-sm font-medium;
+}
+
 /* Portfolio Modal Styles */
 .portfolio-modal {
   @apply fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 pointer-events-auto;
@@ -148,6 +160,41 @@ body {
 
 .portfolio-action-button {
   @apply px-6 py-3 rounded-lg font-medium transition-colors text-center;
+}
+
+/* Tech Logo Styles */
+.tech-logo {
+  @apply inline-block bg-white rounded-md;
+  height: 2.0em;
+  padding: 4px;
+  vertical-align: middle;
+}
+
+.tech-logos-container {
+  @apply flex flex-wrap gap-2 items-center;
+  justify-content: flex-start;
+}
+
+/* Wait Message Animation */
+.wait-message {
+  @apply fixed top-1/2 left-1/2 z-[200] bg-black/80 text-white px-6 py-3 rounded-lg text-sm font-medium backdrop-blur-sm border border-white/20;
+  transform: translate(-50%, -50%);
+  animation: fadeOut 1s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
 }
 
 .portfolio-action-button.primary {

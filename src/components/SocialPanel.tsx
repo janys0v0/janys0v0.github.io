@@ -79,12 +79,16 @@ export default function SocialPanel() {
               iconUrl="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/github.svg"
               tooltip="GitHub"
             />
-            <SocialIcon
-              href="#"
-              iconUrl="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/portfolio.svg"
-              tooltip="Portfolio"
-              onClick={handlePortfolioClick}
-            />
+            <div className="portfolio-group" onClick={handlePortfolioClick}>
+              <div className="social-icon">
+                <img 
+                  src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/folder.svg" 
+                  alt="Portfolio"
+                  className="w-5 h-5 filter brightness-0 invert"
+                />
+              </div>
+              <span className="portfolio-text">Portfolio</span>
+            </div>
           </div>
         </div>
       </div>

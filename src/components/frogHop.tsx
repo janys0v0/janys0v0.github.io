@@ -16,17 +16,18 @@ interface LeafData {
 // Keep existing leaves and add more to the right
 const leafData: LeafData[] = [
   { relX: 0.05, relY: 0.5, title: "Where Next?", text: "???" , year: "2025"},
+  { relX: 0.05, relY: 0.4, title: "Harvard", text: "MS Data Science" , year: "2025~"},
   { relX: 0.10, relY: 0.4, title: "Cathay Pacific ✈️", text: "Data Analytics and AI Automation" , year: "2025"},
   { relX: 0.15, relY: 0.5, title: "Develop for Good 🍃", text: "Product Management & User Research" , year: "2025"},
   { relX: 0.20, relY: 0.4, title: "Ekimetrics", text: "AI Development & Market Analytics Consulting" , year: "2024"},
-  { relX: 0.45, relY: 0.5, title: "ACME Lab @ UCLA", text: "Research in psychological symptoms & emotional flexibilty" , year: "2022~"},
-  { relX: 0.65, relY: 0.4, title: "Nova, Tech for Good", text: "Frontend Development & UX Design" , year: "2022~"},
+  { relX: 0.45, relY: 0.5, title: "ACME Lab @ UCLA", text: "Research in psychological symptoms & emotional flexibilty" , year: "2022~2024"},
+  { relX: 0.65, relY: 0.4, title: "Nova, Tech for Good", text: "Frontend Development & UX Design" , year: "2022~2025"},
   { relX: 0.85, relY: 0.5, title: "Ozcan Lab", text: "Research in Computer Vision for Medical Imaging" , year: "2023"},
   { relX: 1.05, relY: 0.4, title: "Ipsos", text: "User Experience Research Consulting" , year: "2022"},
   { relX: 1.25, relY: 0.5, title: "UCLA", text: "Statistics & Data Science; Cognitive Science" , year: "2021~2025"},
   { relX: 1.45, relY: 0.4, title: "Cranbrook Schools", text: "Frozen in the icy lakes ❄️" , year: "2019"},
   { relX: 1.65, relY: 0.5, title: "Virginia Episcopal School", text: "Tennis player, Sweeper of red autumn leaves 🍁" , year: "2018"},
-  { relX: 1.85, relY: 0.4, title: "Shenzhen", text: "Born and grew up to 15 🎹" , year: "2003"}
+  { relX: 1.85, relY: 0.4, title: "Shenzhen", text: "Born and grew up to 15 🎹" , year: "Long Ago..."}
 ];
 
 const FROG_OFFSET_Y = -30;
@@ -64,6 +65,10 @@ export default function FrogHop() {
 
   // State for intro animation completion
   const [introAnimationComplete, setIntroAnimationComplete] = useState(false);
+  
+  // State for wait message
+  const [showWaitMessage, setShowWaitMessage] = useState(false);
+  const waitMessageTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Effect to calculate absolute positions
   useEffect(() => {
@@ -211,6 +216,18 @@ export default function FrogHop() {
   }, [step, calculatedLeafPositions, controls, isHopping, updateScrollPosition]);
 
   const handleLeafClick = (targetIndex: number) => {
+    // Check if intro animation is still running or if currently hopping
+    if (!introAnimationComplete || isHopping) {
+      // Only show message if not already showing
+      if (!showWaitMessage) {
+        setShowWaitMessage(true);
+        // Auto-hide after animation completes (1s)
+        waitMessageTimeoutRef.current = setTimeout(() => setShowWaitMessage(false), 1000);
+      }
+      return;
+    }
+    
+    // Only proceed if positions are available and target is different
     if (targetIndex !== step && calculatedLeafPositions.length > 0) { 
       animateHop(targetIndex);
     }
@@ -224,6 +241,7 @@ export default function FrogHop() {
       const runIntroAnimation = async () => {
         // Mark animation as started to prevent multiple runs
         setIntroAnimationComplete(true);
+        setIsHopping(true);
         
         // Get the index of the rightmost leaf (from the initially visible set)
         const initialIndex = 6; // This is the 5th leaf (the original rightmost leaf)
@@ -386,6 +404,9 @@ export default function FrogHop() {
           // Update step state to match current position
           setStep(i);
         }
+        
+        // Mark intro animation as complete
+        setIsHopping(false);
       };
 
       runIntroAnimation();
@@ -399,6 +420,15 @@ export default function FrogHop() {
       scrollContainerRef.current.style.transition = 'transform 0.5s ease-out';
     }
   }, [scrollPosition]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (waitMessageTimeoutRef.current) {
+        clearTimeout(waitMessageTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div
@@ -432,7 +462,7 @@ export default function FrogHop() {
         {calculatedTextBoxPositions.map((pos, i) => (
           <div
             key={`text-${i}`}
-            className={`text-box absolute p-10 pl-12 text-white w-[200px] min-h-[100px] overflow-y-auto transition-all duration-500 ${i === step ? 'illuminated' : 'opacity-50 floating-animation'}`}
+            className={`text-box absolute p-10 pl-12 text-white w-[200px] min-h-[100px] overflow-y-auto transition-all duration-500 cursor-pointer ${i === step ? 'illuminated' : 'opacity-50 floating-animation'}`}
             style={{ 
               left: pos.left, 
               top: pos.top,
@@ -443,6 +473,7 @@ export default function FrogHop() {
               height: 'auto', // Allow height to adjust based on content
               minHeight: '200px', // Minimum height
             }}
+            onClick={() => handleLeafClick(i)}
           >
             <p className="font-mono text-xs mb-1 whitespace-normal break-words text-shadow py-0">{leafData[i].year}</p>
             <h4 className="font-bold text-sm mb-1 whitespace-normal break-words text-shadow pt-2">{leafData[i].title}</h4>
@@ -467,6 +498,13 @@ export default function FrogHop() {
           </div>
         </motion.div>
       </div>
+      
+      {/* Wait Message */}
+      {showWaitMessage && (
+        <div className="wait-message">
+          Please wait until the frog finishes hopping!
+        </div>
+      )}
      </div>
   );
 }
