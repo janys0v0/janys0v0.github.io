@@ -16,18 +16,18 @@ interface LeafData {
 // Keep existing leaves and add more to the right
 const leafData: LeafData[] = [
   { relX: 0.05, relY: 0.5, title: "Where Next?", text: "???" , year: "2025"},
-  { relX: 0.05, relY: 0.4, title: "Harvard", text: "MS Data Science" , year: "2025~"},
-  { relX: 0.10, relY: 0.4, title: "Cathay Pacific ✈️", text: "Data Analytics and AI Automation" , year: "2025"},
-  { relX: 0.15, relY: 0.5, title: "Develop for Good 🍃", text: "Product Management & User Research" , year: "2025"},
-  { relX: 0.20, relY: 0.4, title: "Ekimetrics", text: "AI Development & Market Analytics Consulting" , year: "2024"},
-  { relX: 0.45, relY: 0.5, title: "ACME Lab @ UCLA", text: "Research in psychological symptoms & emotional flexibilty" , year: "2022~2024"},
-  { relX: 0.65, relY: 0.4, title: "Nova, Tech for Good", text: "Frontend Development & UX Design" , year: "2022~2025"},
-  { relX: 0.85, relY: 0.5, title: "Ozcan Lab", text: "Research in Computer Vision for Medical Imaging" , year: "2023"},
-  { relX: 1.05, relY: 0.4, title: "Ipsos", text: "User Experience Research Consulting" , year: "2022"},
-  { relX: 1.25, relY: 0.5, title: "UCLA", text: "Statistics & Data Science; Cognitive Science" , year: "2021~2025"},
-  { relX: 1.45, relY: 0.4, title: "Cranbrook Schools", text: "Frozen in the icy lakes ❄️" , year: "2019"},
-  { relX: 1.65, relY: 0.5, title: "Virginia Episcopal School", text: "Tennis player, Sweeper of red autumn leaves 🍁" , year: "2018"},
-  { relX: 1.85, relY: 0.4, title: "Shenzhen", text: "Born and grew up to 15 🎹" , year: "Long Ago..."}
+  { relX: 0.10, relY: 0.4, title: "Harvard", text: "MS Data Science" , year: "2025~"},
+  { relX: 0.15, relY: 0.5, title: "Cathay Pacific ✈️", text: "Data Analytics and AI Automation" , year: "2025"},
+  { relX: 0.20, relY: 0.4, title: "Develop for Good 🍃", text: "Product Management & User Research" , year: "2025"},
+  { relX: 0.25, relY: 0.5, title: "Ekimetrics", text: "AI Development & Market Analytics Consulting" , year: "2024"},
+  { relX: 0.45, relY: 0.4, title: "ACME Lab @ UCLA", text: "Research in psychological symptoms & emotional flexibilty" , year: "2022~2024"},
+  { relX: 0.65, relY: 0.5, title: "Nova, Tech for Good", text: "Frontend Development & UX Design" , year: "2022~2025"},
+  { relX: 0.85, relY: 0.4, title: "Ozcan Lab", text: "Research in Computer Vision for Medical Imaging" , year: "2023"},
+  { relX: 1.05, relY: 0.5, title: "Ipsos", text: "User Experience Research Consulting" , year: "2022"},
+  { relX: 1.25, relY: 0.4, title: "UCLA", text: "Statistics & Data Science; Cognitive Science" , year: "2021~2025"},
+  { relX: 1.45, relY: 0.5, title: "Cranbrook Schools", text: "Frozen in the icy lakes ❄️" , year: "2019"},
+  { relX: 1.65, relY: 0.4, title: "Virginia Episcopal School", text: "Tennis player, Sweeper of red autumn leaves 🍁" , year: "2018"},
+  { relX: 1.85, relY: 0.5, title: "Shenzhen", text: "Born and grew up to 15 🎹" , year: "Long Ago..."}
 ];
 
 const FROG_OFFSET_Y = -30;

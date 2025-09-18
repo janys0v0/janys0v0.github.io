@@ -14,7 +14,7 @@ export default function Home() {
   const rotationRef = useRef(0);
 
   const segments = [
-    <div className="intro-section z-20 max-w-[40%] mx-auto px-[30%] border-l-20 border-transparent pl-60" key="intro">
+    <div className="intro-section z-20 max-w-[80%] mx-auto px-8" key="intro">
     <div className="intro-text">
       <h1 className="intro-title">Hi <span className="text-sm align-bottom italic font-normal">drag me 👉 </span></h1>
       <h1> I&apos;m <span className="text-yellow-500">Janys</span> (Jiayang) Li</h1>
@@ -64,13 +64,26 @@ export default function Home() {
 </div>,
     <div className="profile-image-container" key="profile">
     <div className="profile-image-wrapper">
-      <Image 
-        src="/profile_pic.jpeg" 
-        alt="Janys Li" 
-        width={256} 
-        height={256} 
-        className="profile-image"
-      />
+      <div className="profile-image-item">
+        <Image 
+          src="/grad_photo.PNG" 
+          alt="Janys Li" 
+          width={256} 
+          height={256} 
+          className="profile-image"
+        />
+        <p className="profile-caption">My grad photo</p>
+      </div>
+      <div className="profile-image-item">
+        <Image 
+          src="/dogpc.jpg" 
+          alt="Dog" 
+          width={256} 
+          height={256} 
+          className="profile-image"
+        />
+        <p className="profile-caption">a cute dog I drew</p>
+      </div>
     </div>
   </div>,
   ];
