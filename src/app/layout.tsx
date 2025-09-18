@@ -1,3 +1,5 @@
+"use client";
+
 import {NavBar} from "@/components/navbar";
 import {BannerBackground} from "@/components/BannerBackground";
 import "@/app/globals.css"; 
@@ -10,10 +12,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body>
-                <NavBar />
-                <BannerBackground>
-                        {children}
-                </BannerBackground>
+                {children}
             </body>
         </html>
     );

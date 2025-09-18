@@ -1,1 +1,470 @@
 @import "tailwindcss";
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Neon Glow Font */
+@font-face {
+  font-family: 'Neon Glow';
+  src: url(https://assets.codepen.io/230569/NeonGlow-8VLz.ttf);
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: #191919; /* Ensure body background is black */
+  margin: 0; /* Remove default body margin */
+  padding: 0; /* Remove default body padding */
+}
+
+.body {
+  @apply bg-black;
+}
+
+.intro-section {
+  @apply flex flex-col md:flex-row items-center justify-between w-full h-[30vh] max-w-[90%] px-[5%] select-text;
+}
+
+.intro-title {
+  @apply text-6xl font-bold text-white text-center md:text-left mb-4;
+}
+
+.intro-divider {
+  @apply w-1/3 border-t border-gray-300 mb-8;
+}
+
+.intro-subtitle {
+  @apply text-lg text-gray-300 text-center md:text-left font-mono mb-8;
+}
+
+.intro-description {
+  @apply text-[#6699cc] text-center md:text-left font-mono mb-0 text-sm mt-8;
+}
+
+.profile-image-container {
+  @apply md:w-1/2 flex justify-center md:justify-center mt-6;
+}
+
+.profile-image-wrapper {
+  @apply w-64 h-64 overflow-hidden border-4 border-white rounded-lg;
+}
+
+.profile-image {
+  @apply w-64 h-64 object-cover;
+}
+
+.skills-list {
+  @apply list-disc pl-5 space-y-4 mb-8;
+}
+
+.skills-item {
+  @apply text-gray-300;
+}
+
+.project-button {
+  @apply inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition-colors;
+}
+
+.contact-section {
+  @apply mb-6;
+}
+
+.contact-email {
+  @apply text-blue-500 hover:text-blue-700;
+}
+
+.linkedin-button {
+  @apply inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition-colors mt-4;
+}
+
+/* Social Panel Styles */
+.social-panel {
+  @apply fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 pointer-events-auto;
+}
+
+.social-panel-container {
+  @apply bg-black/60 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20;
+}
+
+.social-icon {
+  @apply w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors duration-200 cursor-pointer;
+}
+
+.social-icon img {
+  @apply w-5 h-5 filter brightness-0 invert;
+}
+
+.social-tooltip {
+  @apply absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/80 text-white text-xs rounded whitespace-nowrap pointer-events-none;
+}
+
+/* Portfolio Modal Styles */
+.portfolio-modal {
+  @apply fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 pointer-events-auto;
+}
+
+.portfolio-content {
+  @apply bg-black/60 backdrop-blur-sm rounded-2xl p-8 max-w-4xl mx-4 relative border border-white/20;
+}
+
+.portfolio-close {
+  @apply absolute top-6 right-6 text-white/70 hover:text-white cursor-pointer text-2xl transition-colors;
+}
+
+/* Project Card Styles */
+.project-card {
+  @apply bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 flex flex-col h-full;
+}
+
+.project-image-container {
+  @apply w-full h-48 mb-4 rounded-lg overflow-hidden;
+}
+
+.project-image {
+  @apply w-full h-full object-cover;
+}
+
+.project-info {
+  @apply space-y-3 flex flex-col flex-grow;
+}
+
+.project-title {
+  @apply text-xl font-bold text-white;
+}
+
+.project-subtitle {
+  @apply text-gray-300 text-sm;
+}
+
+.project-button {
+  @apply inline-block bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 text-sm border border-white/20 hover:border-white/30 mt-auto cursor-pointer;
+}
+
+.portfolio-action-button {
+  @apply px-6 py-3 rounded-lg font-medium transition-colors text-center;
+}
+
+.portfolio-action-button.primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white;
+}
+
+.portfolio-action-button.secondary {
+  @apply bg-white/20 hover:bg-white/30 text-white border border-white/30;
+}
+
+
+/* Arrow box styles */
+.arrow-box {
+  --blur: 1.75rem;
+  --box-blur: calc(0.1 * var(--blur));
+  --glow: var(--color);
+  --size: 12rem;
+  
+  position: relative;
+  width: 15vw;
+  height: 4vw;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+  justify-content: flex-start;
+  --color: #ccc;
+  border-radius: 24px 0 0 24px;
+  border: 2px solid currentColor;
+  border-right: none;
+  box-shadow: 
+    inset 0px 0px 0.5em 0px var(--color),
+    0px 0px 0.5em 0px var(--color);
+  color: var(--color);
+  transition: all 0.3s ease;
+  margin-right: -40px;
+}
+
+.arrow-box::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  z-index: -1;
+  background-color: var(--color);
+  box-shadow: 0 0 2em 0.2em var(--color);
+  transition: opacity 100ms linear;
+  border-radius: 24px 0 0 24px;
+}
+
+.arrow-box:hover {
+  --color: color-mix(in srgb, var(--hover-color) 50%, transparent);
+  color: rgba(0, 0, 0, 0.8);
+  text-shadow: none;
+  animation: border-flicker .5s linear forwards;
+  border-radius: 24px 0 0 24px;
+}
+
+/* Added rule for combined hover and shake state */
+.arrow-box:hover.shake {
+  animation: border-flicker .5s linear forwards, shake 0.5s ease-in-out;
+}
+
+.arrow-box:hover::after {
+  opacity: 1;
+}
+
+
+@keyframes border-flicker {
+  0% {
+    opacity: 0.1;
+  }
+  43% {
+    opacity: 1;
+  }
+  65% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.2;
+  }
+  71% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  83% {
+    opacity: 0.4;
+  }
+  84% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.glow-text {
+  color: var(--color);
+  position: relative;
+  z-index: 1;
+  font-size: .9rem;
+  font-weight: bold;
+  text-transform: lowercase;
+  font-family: monospace, 'Courier New', Courier;
+  transition: all 0.3s ease;
+}
+
+.arrow-box:hover .glow-text {
+  animation: text-flicker 3s infinite;
+}
+
+/* Page Transition Overlay Animations */
+@keyframes overlaySlideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0%);   opacity: 1; }
+}
+
+@keyframes overlayFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.page-transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0;
+  transform: translateX(100%);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.page-transition-overlay.sliding-in {
+  animation: overlaySlideIn 0.5s ease-in forwards;
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateX(0%);
+}
+
+.page-transition-overlay.fading-out {
+  animation: overlayFadeOut 0.5s ease-out forwards;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(0%);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Cloned Element Animations */
+@keyframes cloneSlideIn {
+  from { transform: translateX(-100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes cloneFadeOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(0); }
+}
+
+.page-transition-clone {
+  position: fixed;
+  left: 0;
+  z-index: 10000;
+  pointer-events: none;
+  margin-right: 0;
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.page-transition-clone.sliding-in {
+  animation: cloneSlideIn 0.5s ease-in forwards;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.page-transition-clone.fading-out {
+  animation: cloneFadeOut 0.5s ease-out forwards;
+  opacity: 0;
+  transform: translateX(0);
+}
+
+/* Styles for illuminated text box in FrogHop */
+.text-box.illuminated {
+  opacity: 1;
+}
+
+/* Floating animation for text boxes */
+.floating-animation {
+  animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Frog glow animation */
+@keyframes frogGlow {
+  0% {
+    filter: drop-shadow(0 0 5px rgba(120, 255, 150, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(120, 255, 150, 0.8)) drop-shadow(0 0 25px rgba(120, 255, 150, 0.4));
+  }
+  100% {
+    filter: drop-shadow(0 0 5px rgba(120, 255, 150, 0.5));
+  }
+}
+
+.frog-glow {
+  animation: frogGlow 5s ease-in-out infinite;
+  transform-origin: center;
+  will-change: filter;
+  filter: drop-shadow(0 0 10px rgba(120, 255, 150, 0.7)) drop-shadow(0 0 20px rgba(120, 255, 150, 0.6));
+}
+
+.frog-glow-intense {
+  animation: frogGlow 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(120, 255, 150, 0.7)) drop-shadow(0 0 20px rgba(120, 255, 150, 0.5));
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Prevents scrolling */
+}
+
+.scene-wrapper {
+  height: 300vh;
+  background: #191919;
+  cursor: grab;
+}
+
+.scene-wrapper:active {
+  cursor: grabbing;
+}
+
+.scene {
+  position: relative;
+  top: 0;
+  height: 50vh;
+  perspective: 10000px;
+  display: flex;
+  align-items: flex-start; /* Changed from center to align at top */
+  justify-content: center;
+  overflow: hidden;
+  transform: perspective(100000px) rotateX(-5deg); /* Added upward viewing angle */
+}
+
+.cylinder {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform-origin: center 60%; /* Shifted origin point to create looking up effect */
+}
+
+.wall-segment {
+  position: absolute;
+  width: 60vw;
+  height: 50vh;
+  left: 25%;
+  top: 40%; /* Moved up from 50% to create looking up effect */
+  margin-left: -150px;
+  margin-top: -150px;
+  /* background-size: cover; */
+  /* background-position: center; */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  /* box-shadow: inset 0 0 20px rgba(0,0,0,0.5); */
+  transform: rotateX(5deg); /* Added slight upward tilt to each segment */
+}
+
+/* Make frog container pass through events by default */
+.frog-container {
+  pointer-events: none;
+}
+
+/* Make leaves clickable */
+.cursor-pointer {
+  pointer-events: auto !important;
+}
+
+/* Make text boxes clickable */
+.text-box {
+  pointer-events: auto !important;
+}
