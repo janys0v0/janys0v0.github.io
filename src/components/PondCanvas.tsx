@@ -9,60 +9,19 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
-import { terraces } from "@/content/skills";
 import { Journey } from "@/scene/journey";
 import { motion, setLineResolution } from "@/scene/materials";
-import { ANCHORS, buildPond, TERR_X, type Tier } from "@/scene/pond";
-import { STOPS, type P3 } from "@/scene/stops";
+import { ANCHORS as SCENE_ANCHORS, buildPond, type Tier } from "@/scene/pond";
+import { CARD_X, SEABED_Y, STOPS, SURF, type P3 } from "@/scene/stops";
+import { anchorEls, ANCHORS, DepthGauge, SceneOverlay } from "./SceneOverlay";
 
 type Cam = { fov: number; pos: P3; look: P3 };
-const CAMERAS: Record<"desktop" | "mobile", Cam> = {
+const LAND: Record<"desktop" | "mobile", Cam> = {
   desktop: { fov: 36, pos: [-2.5, 6.2, 34], look: [-2.5, 5.4, 0] },
   mobile: { fov: 52, pos: [-10.2, 5.8, 20.5], look: [-10.2, 3.1, -12] },
 };
-
-// ── labels: plain HTML over the canvas; the scene re-projects their 3D anchors every frame ──
-type Label =
-  | { id: string; kind: "terrace" | "cloud"; text: string; pos: P3 }
-  | { id: string; kind: "chips"; words: string[]; pos: P3; stop: number };
-const LABELS: Label[] = [
-  ...TERR_X.map((x, i): Label => ({ id: terraces[i].id, kind: "terrace", text: terraces[i].label, pos: [x, -0.3, 1.9] })),
-  // keyword chips pop up above each terrace once the frog has landed on it (stop index = terrace index + 1)
-  ...TERR_X.map((x, i): Label => ({ id: `${terraces[i].id}-chips`, kind: "chips", words: terraces[i].keywords, pos: [x, 7.4, -0.5], stop: i + 1 })),
-  { id: "cloud", kind: "cloud", text: "ask the frog", pos: ANCHORS.cloud },
-];
-const CUES = ["SCROLL TO HOP →", "KEEP HOPPING →", "KEEP HOPPING →", "TO THE PIER →", "SCROLL TO DIVE ↓"];
-const labelEls = new Map<string, HTMLElement>();
-const tmp = new THREE.Vector3();
-
-function SceneLabels({ mobile }: { mobile: boolean }) {
-  const ref = (id: string) => (el: HTMLElement | null) => { if (el) labelEls.set(id, el); else labelEls.delete(id); };
-  const hidden = { transform: "translate(-9999px,0)" };
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 z-[5] overflow-hidden">
-      {LABELS.filter((l) => !(mobile && l.kind === "cloud")).map((l) =>
-        l.kind === "chips" ? (
-          <div key={l.id} ref={ref(l.id)} data-on="false" style={hidden}
-            className="group absolute left-0 top-0 flex w-[250px] sm:w-[300px] flex-wrap justify-center gap-1.5">
-            {l.words.map((w, j) => (
-              <span key={w} style={{ transitionDelay: `${j * 45}ms` }}
-                className="scale-75 opacity-0 transition duration-300 ease-out group-data-[on=true]:scale-100 group-data-[on=true]:opacity-100 rounded-full border border-terrace/70 bg-[#0a0820]/80 px-2.5 py-1 font-mono text-[12px] sm:text-[13px] text-[#e4dcff] shadow-[0_0_10px_rgba(139,92,255,0.45)]">
-                {w}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <span key={l.id} ref={ref(l.id)} style={hidden}
-            className={l.kind === "terrace"
-              ? "absolute left-0 top-0 whitespace-nowrap rounded-full border border-tech/40 bg-[#060818]/80 px-3 py-1 font-mono text-[12px] sm:text-[14px] tracking-[0.16em] text-[#f1eeff] uppercase"
-              : "absolute left-0 top-0 whitespace-nowrap font-mono text-[14px] tracking-[0.12em] text-tech"}>
-            {l.text}
-          </span>
-        ),
-      )}
-    </div>
-  );
-}
+const CUE: Record<string, string> = { hub: "SCROLL TO HOP →", ai: "KEEP HOPPING →", product: "KEEP HOPPING →", data: "TO THE PIER →", ledge: "SCROLL TO DIVE ↓", acme: "TO THE SEABED ↓", chat: "" };
+const cueFor = (i: number) => CUE[STOPS[i].id] ?? "SCROLL TO SWIM ↓";
 
 function useReducedMotion() {
   const [reduced, set] = useState(false);
@@ -74,18 +33,36 @@ function useReducedMotion() {
   return reduced;
 }
 
-function World({ tier }: { tier: Tier }) {
+const tmp = new THREE.Vector3();
+const want = { pos: new THREE.Vector3(), look: new THREE.Vector3() };
+const wpos = new THREE.Vector3(), wlook = new THREE.Vector3();
+
+/** Where the camera should be for a frog position: side view on land, closer and level underwater, lower on the seabed. */
+function cameraTarget(p: THREE.Vector3, mobile: boolean) {
+  const land = mobile ? LAND.mobile : LAND.desktop, dx = p.x - STOPS[0].pos[0];
+  want.pos.set(land.pos[0] + dx, land.pos[1], land.pos[2]); want.look.set(land.look[0] + dx, land.look[1], land.look[2]);
+  const w = THREE.MathUtils.smoothstep(SURF + 1 - p.y, 0, 4.5); // 0 on land → 1 underwater
+  if (w > 0) {
+    const onFloor = THREE.MathUtils.smoothstep(SEABED_Y + 7 - p.y, 0, 6); // 0 in the column → 1 on the seabed
+    const cx = THREE.MathUtils.lerp(CARD_X, p.x + (mobile ? 0 : 5), onFloor);
+    wpos.set(cx, p.y + (mobile ? 1.6 : 1.2) + onFloor * 3, mobile ? 31 : 25);
+    wlook.set(cx, p.y + (mobile ? 0.6 : 0.8) + onFloor * 1.8, 0);
+    want.pos.lerp(wpos, w); want.look.lerp(wlook, w);
+  }
+  return want;
+}
+
+function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: boolean) => void }) {
   const { gl, size, camera } = useThree();
   const reduced = useReducedMotion();
   const look = useRef({ x: 0, y: 0 });
   const clock = useRef(0);
-  const camX = useRef<number | null>(null);
-  const cue = useRef(-1);
-  const cam = tier.mobile ? CAMERAS.mobile : CAMERAS.desktop;
+  const cam = useRef<{ pos: THREE.Vector3; look: THREE.Vector3 } | null>(null);
+  const lastStop = useRef(-1);
+  const land = tier.mobile ? LAND.mobile : LAND.desktop;
 
-  // Rebuild only when the tier changes (phone ↔ desktop), not on every resize.
   const pond = useMemo(() => buildPond(tier, { w: size.width * gl.getPixelRatio(), h: size.height * gl.getPixelRatio() }), [tier]);
-  const journey = useMemo(() => new Journey(pond.frog), [pond]);
+  const journey = useMemo(() => { const j = new Journey(pond.frog); j.onSplash = (x) => pond.underwater.splash(x); return j; }, [pond]);
 
   const composer = useMemo(() => {
     const c = new EffectComposer(gl);
@@ -97,34 +74,38 @@ function World({ tier }: { tier: Tier }) {
 
   useEffect(() => {
     const c = camera as THREE.PerspectiveCamera;
-    c.fov = cam.fov; c.near = 0.1; c.far = 600; c.layers.enable(1); c.updateProjectionMatrix();
-  }, [camera, cam]);
+    c.fov = land.fov; c.near = 0.1; c.far = 600; c.layers.enable(1); c.updateProjectionMatrix();
+  }, [camera, land]);
 
   useEffect(() => {
     composer.setPixelRatio(gl.getPixelRatio()); composer.setSize(size.width, size.height);
-    const bloom = composer.passes[1] as UnrealBloomPass;
-    if (tier.low) bloom.resolution.set(size.width / 2, size.height / 2);
+    if (tier.low) (composer.passes[1] as UnrealBloomPass).resolution.set(size.width / 2, size.height / 2);
     setLineResolution(size.width, size.height);
   }, [composer, gl, size, tier.low]);
 
-  // Keep the thought cloud just right of the name, whatever the window's shape.
+  // keep the thought cloud just right of the name, whatever the window's shape
   useEffect(() => {
     if (tier.mobile) return;
     const name = document.querySelector("[data-hero-name]");
     if (!name) return;
-    const c = camera as THREE.PerspectiveCamera, depth = cam.pos[2] - ANCHORS.cloud[2];
+    const c = camera as THREE.PerspectiveCamera, depth = land.pos[2] - SCENE_ANCHORS.cloud[2];
     const halfW = depth * Math.tan(THREE.MathUtils.degToRad(c.fov / 2)) * (size.width / size.height);
     const ndc = (name.getBoundingClientRect().right / size.width) * 2 - 1;
-    pond.cloudBase.x = Math.max(ANCHORS.cloud[0], cam.pos[0] + ndc * halfW + 3.4); // 3.4 ≈ half the cloud's width
-  }, [pond, camera, cam, size, tier.mobile]);
+    pond.cloudBase.x = Math.max(SCENE_ANCHORS.cloud[0], land.pos[0] + ndc * halfW + 3.4);
+    const a = ANCHORS.find((x) => x.id === "cloud"); if (a) a.pos = [pond.cloudBase.x, SCENE_ANCHORS.cloud[1], SCENE_ANCHORS.cloud[2]];
+  }, [pond, camera, land, size, tier.mobile]);
 
-  // Scroll → which stop the frog should be at. Native scrolling is untouched.
+  // scroll → which stop the frog should be at (native scrolling is untouched); ?shot=N snaps for visual tests
   useEffect(() => {
+    const shot = new URLSearchParams(location.search).get("shot");
+    if (shot !== null) {
+      document.documentElement.dataset.shot = "true";
+      document.querySelectorAll<HTMLElement>("[data-hero]").forEach((h) => (h.style.display = "none"));
+      journey.snapTo(Number(shot)); return;
+    }
     gsap.registerPlugin(ScrollTrigger);
     ScrollTrigger.config({ ignoreMobileResize: true }); // iOS address-bar resizes must not move the frog
     const read = () => journey.setScroll(window.scrollY / window.innerHeight);
-    const start = new URLSearchParams(location.search).get("scroll"); // debug: open at a scroll position (viewport heights)
-    if (start) window.scrollTo(0, Number(start) * window.innerHeight);
     const st = ScrollTrigger.create({ start: 0, end: "max", onUpdate: read });
     read();
     return () => st.kill();
@@ -132,9 +113,10 @@ function World({ tier }: { tier: Tier }) {
 
   useEffect(() => {
     const onMove = (e: PointerEvent) => { look.current = { x: (e.clientX / innerWidth) * 2 - 1, y: -((e.clientY / innerHeight) * 2 - 1) }; };
-    window.addEventListener("pointermove", onMove);
+    const onSent = () => pond.underwater.launchBottle();
+    window.addEventListener("pointermove", onMove); window.addEventListener("note-sent", onSent);
     if (new URLSearchParams(location.search).has("debug")) Object.assign(window, { __pond: { gl, scene: pond.scene, camera, composer, frog: pond.frog, journey } });
-    return () => window.removeEventListener("pointermove", onMove);
+    return () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("note-sent", onSent); };
   }, [gl, pond, camera, composer, journey]);
 
   useFrame((_, delta) => {
@@ -143,33 +125,42 @@ function World({ tier }: { tier: Tier }) {
     motion.uTime.value = clock.current; motion.uAmp.value = amp;
 
     journey.update(delta, amp);
-    const p = journey.pos;
+    const p = journey.pos, arrived = !journey.hopping;
     const { halo, pool, light } = pond.frogFx;
     halo.position.set(p.x, p.y + 1.9, p.z - 1.1); pool.position.set(p.x, p.y + 0.03, p.z + 0.1); light.position.set(p.x, p.y + 1.5, p.z + 2.2);
-    pond.update(clock.current, delta, look.current, amp);
+    pool.visible = !journey.underwater;
 
-    // follow camera: pans with the frog along x, eased so hops feel weighty rather than jerky
-    const want = p.x + (cam.pos[0] - STOPS[0].pos[0]);
-    camX.current = camX.current === null || amp === 0 ? want : camX.current + (want - camX.current) * (1 - Math.exp(-delta * 2.6));
-    const dx = camX.current - cam.pos[0];
-    camera.position.set(cam.pos[0] + dx, cam.pos[1], cam.pos[2]);
-    camera.lookAt(cam.look[0] + dx, cam.look[1], cam.look[2]);
+    // follow camera: eased toward the frame for the frog's current zone
+    const t = cameraTarget(p, tier.mobile);
+    if (!cam.current || amp === 0) cam.current = { pos: t.pos.clone(), look: t.look.clone() };
+    else { const k = 1 - Math.exp(-delta * 2.6); cam.current.pos.lerp(t.pos, k); cam.current.look.lerp(t.look, k); }
+    camera.position.copy(cam.current.pos); camera.lookAt(cam.current.look);
 
+    const activeExp = arrived ? STOPS[journey.reached].exp ?? null : null;
+    pond.update(clock.current, delta, look.current, amp, activeExp, camera.position.y);
     composer.render(delta);
 
-    for (const l of LABELS) {
-      const el = labelEls.get(l.id); if (!el) continue;
-      if (l.kind === "cloud") tmp.copy(pond.cloud.position); else tmp.set(...l.pos);
-      tmp.project(camera);
-      const x = ((tmp.x + 1) / 2) * size.width, y = ((1 - tmp.y) / 2) * size.height;
+    // anchored HTML
+    for (const a of ANCHORS) {
+      const el = anchorEls.get(a.id); if (!el) continue;
+      let on = a.show.when === "always" ? true : a.show.when === "seen" ? journey.seen >= a.show.stop : arrived && journey.reached === a.show.stop;
+      if (a.zone === "land" && camera.position.y < SURF + 2) on = false; // land labels belong above the water
+      el.dataset.on = String(on);
+      if (tier.mobile && a.pinOnMobile) continue;
+      tmp.set(...a.pos).project(camera);
+      let x = ((tmp.x + 1) / 2) * size.width; const y = ((1 - tmp.y) / 2) * size.height;
+      const half = el.offsetWidth / 2; // keep bubbles and chips fully on screen (matters on phones)
+      if (on && half > 0 && half * 2 < size.width - 16 && x > -half && x < size.width + half) x = THREE.MathUtils.clamp(x, half + 8, size.width - half - 8);
       el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -50%)`;
-      if (l.kind === "chips") el.dataset.on = String(journey.seen >= l.stop);
     }
-    // the fixed scroll prompt changes with the stop the frog is on
-    if (cue.current !== journey.reached) {
-      cue.current = journey.reached;
-      const el = document.getElementById("scroll-cue");
-      if (el) el.textContent = CUES[Math.min(journey.reached, CUES.length - 1)];
+    const gauge = anchorEls.get("gauge"); if (gauge) gauge.dataset.on = String(STOPS[journey.reached].kind === "water" || journey.underwater);
+    for (const s of STOPS) { const g = anchorEls.get(`g-${s.id}`); if (g) g.dataset.on = String(arrived && STOPS[journey.reached].id === s.id); }
+
+    if (lastStop.current !== journey.reached) {
+      lastStop.current = journey.reached;
+      const cue = document.getElementById("scroll-cue");
+      if (cue) { const text = cueFor(journey.reached); cue.textContent = text; cue.dataset.on = String(text !== ""); }
+      onStop(journey.reached, journey.underwater);
     }
   }, 1);
 
@@ -180,26 +171,33 @@ function webglOk() {
   try { return !!document.createElement("canvas").getContext("webgl2"); } catch { return false; }
 }
 
-/** The 3D pond behind the homepage text. Renders nothing when WebGL2 is unavailable (the text still works). */
+/** The 3D pond behind the homepage. Renders nothing when WebGL2 is unavailable (the page's HTML still works). */
 export default function PondCanvas() {
   const [tier, setTier] = useState<Tier | null>(null);
   useEffect(() => {
-    if (!webglOk()) return;
+    if (!webglOk()) { document.documentElement.dataset.no3d = "true"; return; }
     const decide = () => {
       const mobile = innerWidth <= 600 || innerWidth / innerHeight < 0.8;
       const low = mobile || new URLSearchParams(location.search).get("q") === "low";
       const theme = document.documentElement.dataset.theme === "dusk" ? "dusk" : "night";
       setTier((t) => (t && t.mobile === mobile && t.low === low && t.theme === theme ? t : { mobile, low, theme }));
     };
-    decide(); window.addEventListener("resize", decide); return () => window.removeEventListener("resize", decide);
+    decide();
+    window.addEventListener("resize", decide); window.addEventListener("themechange", decide);
+    return () => { window.removeEventListener("resize", decide); window.removeEventListener("themechange", decide); };
   }, []);
   if (!tier) return null;
+  const onStop = (i: number, underwater: boolean) => {
+    document.documentElement.dataset.stop = STOPS[i].id;
+    document.documentElement.dataset.zone = STOPS[i].kind === "seabed" ? "seabed" : underwater ? "water" : "land";
+  };
   return (
     <>
       <Canvas className="!absolute inset-0" dpr={[1, 1.5]} gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }} camera={{ fov: 36, position: [-2.5, 6.2, 34] }} aria-hidden>
-        <World key={`${tier.mobile}-${tier.low}-${tier.theme}`} tier={tier} />
+        <World key={`${tier.mobile}-${tier.low}-${tier.theme}`} tier={tier} onStop={onStop} />
       </Canvas>
-      <SceneLabels mobile={tier.mobile} />
+      <SceneOverlay mobile={tier.mobile} />
+      <DepthGauge mobile={tier.mobile} />
     </>
   );
 }

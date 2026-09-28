@@ -7,13 +7,15 @@ import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { LineSegments2 } from "three/addons/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js";
 import { Frog } from "./frog";
+import { buildUnderwater, type Underwater } from "./underwater";
 import {
   blob, C, curve, glow, line, lineMat, motion, P3, pondWave, ringPts, seeded, segments, toSegs,
   withLineMotion, withMeshMotion,
 } from "./materials";
 
 export type Tier = { low: boolean; mobile: boolean; theme: "night" | "dusk" };
-export const SURF = -0.6;
+import { SURF } from "./stops";
+export { SURF };
 export const TERR_X = [-8, -2, 4] as const;
 export const ANCHORS = { cloud: [0.2, 10.4, -3] as P3, frog: [-11.8, 0, 0.3] as P3 };
 
@@ -56,9 +58,10 @@ export type Pond = {
   /** The "ask the frog" thought cloud; the page moves it so it always sits right of the name. */
   cloud: THREE.Group;
   cloudBase: { x: number; y: number };
+  underwater: Underwater;
   reflector: Reflector | null;
   bloom: { strength: number; radius: number; threshold: number };
-  update: (t: number, dt: number, look: { x: number; y: number }, amp: number) => void;
+  update: (t: number, dt: number, look: { x: number; y: number }, amp: number, activeExp: string | null, camY: number) => void;
 };
 
 export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
@@ -202,14 +205,19 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
     }
     (water.material as THREE.Material).transparent = true;
     water.rotation.x = -Math.PI / 2; water.position.y = SURF; scene.add(water);
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(300, 200), new THREE.MeshStandardMaterial({ color: "#0a1428", roughness: 1 }));
-    floor.rotation.x = -Math.PI / 2; floor.position.y = SURF - 2.2; scene.add(floor);
+    // murky floor under the pond, stopping short of the dive column so the frog can swim down
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(160, 200), new THREE.MeshStandardMaterial({ color: "#0a1428", roughness: 1 }));
+    floor.rotation.x = -Math.PI / 2; floor.position.set(-68, SURF - 2.2, 0); scene.add(floor);
   }
 
   // ── lights ────────────────────────────────────────────────────────────────
   scene.add(new THREE.HemisphereLight("#9fb0e8", "#1e2a2a", 1.7));
   const moonL = new THREE.DirectionalLight("#c9d2ff", 1.3); moonL.position.set(30, 40, -60); scene.add(moonL);
   const rim = new THREE.DirectionalLight("#ff9ad8", 0.5); rim.position.set(-40, 10, 20); scene.add(rim);
+
+  const underwater = buildUnderwater(scene, tier, softDot);
+  const landFog = { color: new THREE.Color(SKY.fog), near: 45, far: 320 };
+  const fog = scene.fog as THREE.Fog;
 
   // ── lily pads: one instanced fill + four batched outline sets, all riding the wave field ──
   const placed: [number, number, number][] = [];
@@ -414,7 +422,15 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
 
   const bloom = tier.mobile ? { strength: 0.45, radius: 0.5, threshold: 0.42 } : { strength: 0.78, radius: 0.5, threshold: 0.42 };
   return {
-    scene, frog, reflector, bloom, frogFx: { halo, pool, light: fl }, cloud: cg, cloudBase,
-    update(t, dt, look, amp) { for (const f of tick) f(t, dt, amp); frog.update(dt, t, look, amp); },
+    scene, frog, reflector, bloom, frogFx: { halo, pool, light: fl }, cloud: cg, cloudBase, underwater,
+    update(t, dt, look, amp, activeExp, camY) {
+      for (const f of tick) f(t, dt, amp);
+      frog.update(dt, t, look, amp);
+      underwater.update(t, dt, amp, activeExp, camY);
+      // fog turns deep blue and close once the camera is below the surface
+      const w = THREE.MathUtils.smoothstep(SURF + 0.5 - camY, 0, 3.5);
+      fog.color.copy(landFog.color).lerp(underwater.fog.color, w);
+      fog.near = THREE.MathUtils.lerp(landFog.near, underwater.fog.near, w); fog.far = THREE.MathUtils.lerp(landFog.far, underwater.fog.far, w);
+    },
   };
 }

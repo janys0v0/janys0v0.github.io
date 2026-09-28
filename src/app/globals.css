@@ -33,3 +33,6 @@ body { background: var(--color-ink); color: var(--color-text); font-family: var(
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* visual-test mode (?shot=N): show a stop without scrolling, so the intro text is hidden */
+html[data-shot] [data-hero] { visibility: hidden; }
