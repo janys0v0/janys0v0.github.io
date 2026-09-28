@@ -32,7 +32,7 @@ export function SiteNav() {
       <Link href="/" className="glow-frog text-[17px] font-semibold">{profile.handle}</Link>
       <div className="flex items-center gap-6 text-[14px] text-muted">
         <Link href="/overview" className="hidden sm:inline">overview</Link>
-        <a href={`mailto:${profile.email}`} className="rounded-full border-[1.5px] border-frog px-4 py-1.5 text-frog">let&apos;s chat</a>
+        <Link href="/#chat" className="rounded-full border-[1.5px] border-frog px-4 py-1.5 text-frog">let&apos;s chat</Link>
       </div>
     </nav>
   );

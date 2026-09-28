@@ -36,3 +36,13 @@ body { background: var(--color-ink); color: var(--color-text); font-family: var(
 
 /* visual-test mode (?shot=N): show a stop without scrolling, so the intro text is hidden */
 html[data-shot] [data-hero] { visibility: hidden; }
+
+/* Let's Chat appears when the frog reaches the seabed */
+.chat-panel { opacity: 0; pointer-events: none; transition: opacity 0.6s ease; }
+html[data-stop="chat"] .chat-panel { opacity: 1; pointer-events: auto; }
+
+/* No WebGL2: no scene, so show the plain fallback and let the page be short */
+.no3d-only { display: none; }
+html[data-no3d] .no3d-only { display: block; }
+html[data-no3d] main { height: auto !important; }
+html[data-no3d] #scroll-cue { display: none; }

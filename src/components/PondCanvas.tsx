@@ -45,8 +45,10 @@ function cameraTarget(p: THREE.Vector3, mobile: boolean) {
   if (w > 0) {
     const onFloor = THREE.MathUtils.smoothstep(SEABED_Y + 7 - p.y, 0, 6); // 0 in the column → 1 on the seabed
     const cx = THREE.MathUtils.lerp(CARD_X, p.x + (mobile ? 0 : 5), onFloor);
-    wpos.set(cx, p.y + (mobile ? 1.6 : 1.2) + onFloor * 3, mobile ? 31 : 25);
-    wlook.set(cx, p.y + (mobile ? 0.6 : 0.8) + onFloor * 1.8, 0);
+    // on phones the chat sheet covers the lower half, so the seabed shot looks further down (frog sits higher on screen)
+    const phoneSeabed = mobile ? onFloor * -5 : 0;
+    wpos.set(cx, p.y + (mobile ? 1.6 : 1.2) + onFloor * 3 + phoneSeabed, mobile ? 31 : 25);
+    wlook.set(cx, p.y + (mobile ? 0.6 : 0.8) + onFloor * 1.8 + phoneSeabed * 1.3, 0);
     want.pos.lerp(wpos, w); want.look.lerp(wlook, w);
   }
   return want;
@@ -107,8 +109,11 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
     ScrollTrigger.config({ ignoreMobileResize: true }); // iOS address-bar resizes must not move the frog
     const read = () => journey.setScroll(window.scrollY / window.innerHeight);
     const st = ScrollTrigger.create({ start: 0, end: "max", onUpdate: read });
+    // /#chat (the nav's "let's chat") swims straight to the seabed
+    const toHash = () => { const i = STOPS.findIndex((s) => `#${s.id}` === location.hash); if (i > 0) window.scrollTo({ top: STOPS[i].at * window.innerHeight, behavior: "smooth" }); };
+    toHash(); window.addEventListener("hashchange", toHash);
     read();
-    return () => st.kill();
+    return () => { st.kill(); window.removeEventListener("hashchange", toHash); };
   }, [journey]);
 
   useEffect(() => {
@@ -153,7 +158,7 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
       if (on && half > 0 && half * 2 < size.width - 16 && x > -half && x < size.width + half) x = THREE.MathUtils.clamp(x, half + 8, size.width - half - 8);
       el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -50%)`;
     }
-    const gauge = anchorEls.get("gauge"); if (gauge) gauge.dataset.on = String(STOPS[journey.reached].kind === "water" || journey.underwater);
+    const gauge = anchorEls.get("gauge"); if (gauge) gauge.dataset.on = String(STOPS[journey.reached].kind === "water" || (journey.underwater && STOPS[journey.reached].kind !== "seabed"));
     for (const s of STOPS) { const g = anchorEls.get(`g-${s.id}`); if (g) g.dataset.on = String(arrived && STOPS[journey.reached].id === s.id); }
 
     if (lastStop.current !== journey.reached) {
