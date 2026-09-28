@@ -46,3 +46,6 @@ html[data-stop="chat"] .chat-panel { opacity: 1; pointer-events: auto; }
 html[data-no3d] .no3d-only { display: block; }
 html[data-no3d] main { height: auto !important; }
 html[data-no3d] #scroll-cue { display: none; }
+
+/* the "ask the frog" button steps aside where it would cover the chat sheet on phones */
+@media (max-width: 640px) { html[data-stop="chat"] [aria-haspopup="dialog"] { display: none; } }
