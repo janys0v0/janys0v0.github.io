@@ -51,6 +51,11 @@ function padGeo(notch = 0.24) {
 export type Pond = {
   scene: THREE.Scene;
   frog: Frog;
+  /** Glow that travels with the frog: halo behind it, light pool on the ground, green point light. */
+  frogFx: { halo: THREE.Object3D; pool: THREE.Object3D; light: THREE.Object3D };
+  /** The "ask the frog" thought cloud; the page moves it so it always sits right of the name. */
+  cloud: THREE.Group;
+  cloudBase: { x: number; y: number };
   reflector: Reflector | null;
   bloom: { strength: number; radius: number; threshold: number };
   update: (t: number, dt: number, look: { x: number; y: number }, amp: number) => void;
@@ -366,6 +371,7 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
   }
 
   // ── thought cloud ("ask the frog"): a slow bob ───────────────────────────
+  const cg = new THREE.Group(); const cloudBase = { x: ANCHORS.cloud[0], y: ANCHORS.cloud[1] };
   {
     const bumps = [[-2.4, -0.2, 1.1], [-1.1, 0.6, 1.25], [0.6, 0.85, 1.35], [2.1, 0.2, 1.1], [1.3, -0.7, 1], [-0.6, -0.7, 1]];
     const cloud: P3[] = [];
@@ -374,11 +380,11 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
       for (const [bx, by, r] of bumps) { const b = bx * dx + by * dy, c = bx * bx + by * by - r * r, disc = b * b - c; if (disc >= 0) best = Math.max(best, b + Math.sqrt(disc)); }
       cloud.push([dx * best, dy * best * 0.8, 0]);
     }
-    const cg = new THREE.Group(); cg.position.set(...ANCHORS.cloud); scene.add(cg);
+    cg.position.set(...ANCHORS.cloud); scene.add(cg);
     const cf = new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(cloud.map((p) => new THREE.Vector2(p[0], p[1])))), new THREE.MeshBasicMaterial({ color: "#0a1030", transparent: true, opacity: 0.75, fog: false }));
     cf.position.z = -0.05; cg.add(cf);
     line(cg, cloud, "#5a8bff", { width: 2.4, k: 1.2, opacity: 0.9 });
-    tick.push((t, _dt, amp) => { cg.position.y = ANCHORS.cloud[1] + amp * 0.12 * Math.sin(t * 0.6); });
+    tick.push((t, _dt, amp) => { cg.position.x = cloudBase.x; cg.position.y = cloudBase.y + amp * 0.12 * Math.sin(t * 0.6); });
   }
 
   // ── the frog (kept out of the reflection so its bright double doesn't compete) ──
@@ -408,7 +414,7 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
 
   const bloom = tier.mobile ? { strength: 0.45, radius: 0.5, threshold: 0.42 } : { strength: 0.78, radius: 0.5, threshold: 0.42 };
   return {
-    scene, frog, reflector, bloom,
+    scene, frog, reflector, bloom, frogFx: { halo, pool, light: fl }, cloud: cg, cloudBase,
     update(t, dt, look, amp) { for (const f of tick) f(t, dt, amp); frog.update(dt, t, look, amp); },
   };
 }

@@ -9,7 +9,7 @@ export function HeroOverlay() {
       {/* faint backing so the text keeps its contrast over the 3D sky */}
       <div aria-hidden className="absolute -inset-x-10 top-16 -bottom-6 -z-10 bg-[radial-gradient(closest-side,rgba(3,5,18,0.4),rgba(3,5,18,0))]" />
       <p className="font-mono text-[13px] tracking-[0.3em] text-tech">HI, I&apos;M</p>
-      <h1 className="mt-3 text-[46px] sm:text-[72px] font-bold leading-[1.04] tracking-tight">
+      <h1 data-hero-name className="mt-3 w-fit text-[46px] sm:text-[72px] font-bold leading-[1.04] tracking-tight">
         Janys <span className="glow-frog">(Jiayang)</span> Li
       </h1>
       <p className="mt-4 text-[19px] sm:text-[24px] leading-snug">
@@ -28,7 +28,7 @@ export function HeroOverlay() {
 
 export function SiteNav() {
   return (
-    <nav className="absolute inset-x-0 top-0 z-20 flex h-16 items-center justify-between px-5 sm:px-10 font-mono">
+    <nav className="fixed inset-x-0 top-0 z-20 flex h-16 bg-[linear-gradient(rgba(4,5,13,0.75),rgba(4,5,13,0))] items-center justify-between px-5 sm:px-10 font-mono">
       <Link href="/" className="glow-frog text-[17px] font-semibold">{profile.handle}</Link>
       <div className="flex items-center gap-6 text-[14px] text-muted">
         <Link href="/overview" className="hidden sm:inline">overview</Link>
