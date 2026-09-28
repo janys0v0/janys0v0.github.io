@@ -1,34 +1,15 @@
-"use client";
+import Link from "next/link";
+import { HeroOverlay, SiteNav } from "@/components/HeroOverlay";
 
-import FrogHop from "@/components/frogHop";
-import SocialPanel from "@/components/SocialPanel";
-import dynamic from "next/dynamic";
-
-const CylinderScene = dynamic(() => import("@/components/CylinderScene"), {
-  ssr: false,
-});
-
+// Phase 0 homepage: the text layer on the night sky. Phase 1 mounts the 3D pond scene behind it.
 export default function Home() {
   return (
-    <main
-      style={{
-        position: "relative",
-        width: "100vw",
-        height: "100vh",
-        overflow: "hidden",
-        background: "#0d1117",
-      }}
-    >
-      {/* ── True 3D cylinder — canvas texture on smooth geometry ── */}
-      <CylinderScene />
-
-      {/* ── Frog (above canvas) ── */}
-      <div className="absolute inset-0 frog-container" style={{ zIndex: 20 }}>
-        <FrogHop />
-      </div>
-
-      {/* ── Social panel ── */}
-      <SocialPanel />
+    <main className="relative min-h-svh overflow-hidden bg-[linear-gradient(#050818,#141c44_62%,#5a6aa8)]">
+      <SiteNav />
+      <HeroOverlay />
+      <Link href="/overview" className="absolute bottom-8 left-1/2 -translate-x-1/2 rounded-full border border-frog/60 bg-ink/70 px-5 py-2.5 font-mono text-[14px] tracking-[0.25em] text-frog">
+        SEE EVERYTHING →
+      </Link>
     </main>
   );
 }

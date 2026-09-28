@@ -1,0 +1,77 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=block" rel="stylesheet">
+<style>
+  :root { --ink:#2b1d16; --soft:#5c4a3f; --violet:#3f2590; --sun:#9a2c0c; --wood:#4a2e1d; --paper:#fbf7ef; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { width:100vw; height:100vh; overflow:hidden; background:#1a1422; font-family:'Space Grotesk',system-ui,sans-serif; color:var(--ink); }
+  #stage,#ui { position:absolute; inset:0; } #ui { pointer-events:none; }
+  .mono { font-family:'JetBrains Mono',monospace; } .serif { font-family:'Fraunces',Georgia,serif; }
+  nav { position:absolute; top:0; left:0; right:0; height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 40px; }
+  nav .logo { font-weight:600; font-size:17px; color:var(--ink); }
+  nav .links { display:flex; gap:26px; align-items:center; font-size:14px; color:var(--ink); }
+  nav .pill { border:1.5px solid var(--wood); padding:7px 16px; border-radius:999px; background:rgba(251,247,239,.7); }
+  .dark nav .logo, .dark nav .links { color:#fbf1e6; } .dark nav .pill { border-color:#fbf1e6; background:rgba(40,20,30,.35); }
+  .hero { position:absolute; left:64px; top:112px; width:760px; }
+  .hero::before { content:''; position:absolute; left:-80px; right:-40px; top:-50px; bottom:-40px; z-index:-1; background:radial-gradient(closest-side, rgba(251,247,239,.9), rgba(251,247,239,.7) 60%, rgba(251,247,239,0)); }
+  .kicker { font-size:13px; letter-spacing:.3em; color:var(--violet); font-weight:600; }
+  .hero h1 { font-size:72px; line-height:1.0; font-weight:700; margin:14px 0 18px; letter-spacing:-.01em; }
+  .hero h1 span { color:var(--violet); }
+  .tag { font-size:24px; line-height:1.35; } .tag em { font-style:normal; color:var(--violet); } .tag b { font-weight:500; color:var(--sun); }
+  .sub { margin-top:14px; font-size:15px; letter-spacing:.06em; color:#4a382d; white-space:nowrap; }
+  .btns { display:flex; gap:10px; margin-top:22px; } .btns div { font-size:14px; padding:9px 14px; border-radius:10px; border:1.5px solid var(--wood); background:rgba(251,247,239,.75); }
+  .floors { position:absolute; right:34px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column-reverse; gap:12px; align-items:center;
+            padding:14px 10px; border-radius:14px; background:linear-gradient(#c9a45c,#8f6f34); box-shadow:inset 0 1px 0 #f3dca0, 0 6px 18px rgba(0,0,0,.25); }
+  .floors i { width:34px; height:34px; border-radius:50%; display:grid; place-items:center; font-style:normal; font-size:13px; font-family:'JetBrains Mono',monospace; color:#3a2a10;
+              background:radial-gradient(circle at 35% 30%, #fff5d6, #d9b76a 60%, #a8843e); box-shadow:0 1px 2px rgba(0,0,0,.4); }
+  .floors i.on { color:#fff; background:radial-gradient(circle at 35% 30%, #ffd9a0, #ff8a3d 55%, #c9401a); box-shadow:0 0 14px #ff8a3d; }
+  .cue { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); font-size:14px; letter-spacing:.25em; padding:10px 20px; border-radius:999px; background:rgba(251,247,239,.85); border:1.5px solid var(--wood); }
+  .anchor { position:absolute; transform:translate(-50%,-50%); }
+  .plaque { position:absolute; left:64px; top:150px; width:470px; padding:28px 30px; background:var(--paper); border:10px solid #3e2618; border-radius:4px;
+            box-shadow:0 18px 30px rgba(0,0,0,.35), inset 0 0 0 1px #d8cbb3; }
+  .plaque .meta { font-size:12px; letter-spacing:.16em; color:var(--violet); } .plaque h3 { font-size:32px; margin:8px 0 2px; } .plaque .role { color:var(--soft); margin-bottom:12px; }
+  .plaque li { font-size:15px; line-height:1.45; margin:0 0 8px 18px; } .plaque .tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+  .plaque .tags span { font-size:12px; padding:4px 10px; border-radius:999px; border:1px solid var(--wood); }
+  .bubble { position:absolute; width:250px; padding:12px 16px; border-radius:16px; background:var(--paper); font-size:14px; line-height:1.4; box-shadow:0 8px 20px rgba(0,0,0,.25); }
+  .bubble small { display:block; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; color:var(--sun); margin-bottom:4px; }
+  .chat { position:absolute; left:64px; top:118px; width:480px; padding:30px; border-radius:18px; background:rgba(251,247,239,.94); box-shadow:0 20px 40px rgba(20,5,20,.35); }
+  .chat h2 { font-size:54px; line-height:1; margin:6px 0 10px; } .chat p { color:var(--soft); margin-bottom:16px; font-size:15px; }
+  .field { border:1px solid #cdbfa8; border-radius:10px; padding:11px 14px; font-size:14px; color:#8b7a68; margin-bottom:10px; background:#fff; }
+  .row { display:flex; gap:10px; } .row .field { flex:1; }
+  .seg { display:flex; gap:8px; margin-bottom:10px; } .seg span { font-size:13px; padding:7px 12px; border-radius:999px; border:1px solid #cdbfa8; } .seg .on { border-color:var(--sun); color:var(--sun); }
+  .send { text-align:center; padding:13px; border-radius:12px; font-weight:700; color:#fff; background:linear-gradient(90deg,#c9401a,#e2703a); }
+  .alt { display:flex; gap:10px; margin-top:10px; } .alt div { flex:1; text-align:center; font-size:14px; padding:10px; border-radius:10px; border:1.5px solid var(--wood); }
+</style></head>
+<body><div id="stage"></div><div id="ui"></div>
+<script type="importmap">{ "imports": { "three": "./three/build/three.module.js", "three/addons/": "./three/examples/jsm/" } }</script>
+<script type="module">
+const s = new URLSearchParams(location.search).get('s') || 'lobby';
+const ui = document.getElementById('ui'), add = h => ui.insertAdjacentHTML('beforeend', h);
+const at = (x, y, z, h) => { const [a, b] = window.__project(x, y, z); add(`<div class="anchor" style="left:${a}px;top:${b}px">${h}</div>`); };
+const floors = (on) => add(`<div class="floors">${['L', '2', '3', '4', 'R'].map((f, i) => `<i class="${i === on ? 'on' : ''}">${f}</i>`).join('')}</div>`);
+const nav = () => add(`<nav><div class="logo mono">janys.ponder</div><div class="links"><span>overview</span><span>☁ ask the frog</span><span class="pill">let's chat</span></div></nav>`);
+window.addEventListener('world-ready', async () => {
+  await document.fonts.ready;
+  if (s === 'lobby') { nav(); floors(0);
+    add(`<div class="hero"><div class="kicker mono">FLOOR L · HI, I'M</div><h1 class="serif">Janys <span>(Jiayang)</span> Li</h1>
+      <div class="tag">amphibian in the <em>how you think</em> &amp; <b>how I build</b></div>
+      <div class="sub mono">DATA SCIENTIST · PRODUCT BUILDER · M.S. DATA SCIENCE @ HARVARD</div>
+      <div class="btns mono"><div>in LinkedIn</div><div>⌥ GitHub</div><div>✉ janysli.jy@gmail.com</div></div></div>`);
+    add(`<div class="cue mono">SCROLL TO CLIMB ↑</div>`); }
+  if (s === 'floor') { nav(); floors(2);
+    add(`<div class="plaque"><div class="meta mono">FLOOR 3 · JUN – DEC 2024 · HONG KONG</div><h3 class="serif">Ekimetrics</h3><div class="role">Data Science Consultant Intern</div><ul>
+      <li>Built a retrieval + LLM document-extraction platform: <b>20 → 7 min</b> per report, <b>+210%</b> throughput on Spark</li>
+      <li>Presented budget recommendations to 10 Fortune 500 leaders, backed by 10+ Bayesian models</li></ul>
+      <div class="tags mono"><span>RAG</span><span>LangChain</span><span>Spark</span><span>Bayesian</span></div></div>`);
+    at(11.2, 5.2, 0.5, `<div class="bubble" style="transform:translate(-40%,-100%)"><small>THE CLIENT</small>Analysts spend 20 minutes digging numbers out of every report.</div>`);
+    at(3.6, 4.4, 5.5, `<div class="bubble" style="transform:translate(-50%,-100%)"><small>TA-DA!</small>An extraction platform: 20 → 7 minutes per document.</div>`); }
+  if (s === 'roof') { document.body.classList.add('dark'); nav(); floors(4);
+    add(`<div class="chat"><div class="kicker mono">ROOFTOP · YOU MADE IT UP</div><h2 class="serif">Let's Chat</h2><p>Hiring, building something, or just curious how people think? Leave a note.</p>
+      <div class="row"><div class="field">Name</div><div class="field">Email</div></div><div class="field">Organization (optional)</div>
+      <div class="seg mono"><span class="on">Hiring</span><span>Collaboration</span><span>Just saying hi</span></div>
+      <div class="field" style="height:72px">Your message…</div><div class="send">Send ↗</div>
+      <div class="alt mono"><div>in Connect on LinkedIn</div><div>✉ Email me</div></div></div>`); }
+});
+</script>
+<script type="module" src="./stair.js"></script>
+</body></html>

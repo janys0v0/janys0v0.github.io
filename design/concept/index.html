@@ -1,0 +1,210 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;700&display=block" rel="stylesheet">
+<style>
+  :root { --frog:#39ff88; --cyan:#29d3ff; --pink:#ff6ad5; --yellow:#f4ff61; --purple:#8b5cff; --ink:#e8ecff; --dim:#8c93b8; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { width:100vw; height:100vh; overflow:hidden; background:#02030a; color:var(--ink); font-family:'Space Grotesk',system-ui,sans-serif; }
+  #stage, #ui { position:absolute; inset:0; }
+  body.v2 #ui::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 55%, rgba(0,0,0,0) 55%, rgba(3,4,14,.55) 100%), radial-gradient(ellipse 900px 420px at 18% 26%, rgba(4,6,22,.55), rgba(4,6,22,0) 70%); }
+  body.v3 #ui::before { background:
+      radial-gradient(ellipse 1000px 520px at 20% 27%, rgba(3,5,18,.72), rgba(3,5,18,0) 72%),
+      radial-gradient(ellipse at 32% 52%, rgba(0,0,0,0) 38%, rgba(2,3,12,.62) 100%),
+      linear-gradient(rgba(2,3,12,0) 62%, rgba(2,3,12,.55) 100%); }
+  body.v3 nav .links { opacity:.55; } body.v3 nav .logo { opacity:.8; }
+  body.v3 nav .pill { box-shadow:none; }
+  body.v3 .tlabel { opacity:.4; text-shadow:none; }
+  body.v3 .anchor .glow-c { opacity:.55; text-shadow:none; }
+  body.v3 .cue { opacity:.6; }
+  body.v3 .mini { opacity:.35; }
+  body.v3 .hero h1 { font-size:72px; }
+  body.v3 .hero h1 span { text-shadow:0 0 22px rgba(57,255,136,.45); }
+  body.v3 .hero .sub { color:#b9c0e6; }
+  body.v3 .icons div { background:#070a1acc; border-color:#39406e; color:#dfe3ff; }
+  body.v4 #ui::before { background:
+      radial-gradient(ellipse 950px 480px at 20% 27%, rgba(3,5,18,.5), rgba(3,5,18,0) 72%),
+      radial-gradient(ellipse at 40% 50%, rgba(0,0,0,0) 55%, rgba(2,3,12,.4) 100%); }
+  body.v4 nav .links { opacity:.8; } body.v4 .tlabel { opacity:.75; }
+  body.v4 .anchor .glow-c { opacity:.85; } body.v4 .cue { opacity:.85; } body.v4 .mini { opacity:.6; }
+  /* v5: readable secondary text (WCAG AA), stronger scrim, clearer scroll prompt */
+  body.v5 #ui::before { background: radial-gradient(ellipse at 40% 50%, rgba(0,0,0,0) 55%, rgba(2,3,12,.4) 100%); }
+  body.v5 .hero::before { content:''; position:absolute; left:-90px; right:-120px; top:-60px; bottom:-26px; z-index:-1;
+      background:radial-gradient(closest-side, rgba(3,5,18,.72), rgba(3,5,18,.45) 60%, rgba(3,5,18,0)); }
+  body.v5 .hero .sub { font-size:15px; color:#e2e6ff; letter-spacing:.06em; }
+  body.v5 .icons div { font-size:14px; }
+  body.v5 nav .links { opacity:1; font-size:14px; color:#cdd3f2; }
+  body.v5 .tlabel { font-size:14px; color:#f1eeff; opacity:1; padding:5px 12px; border-radius:999px; background:rgba(6,8,24,.78); border:1px solid rgba(41,211,255,.4); letter-spacing:.16em; }
+  body.v5 .anchor .glow-c { opacity:1; font-size:14px; }
+  body.v5 .cue { font-size:14px; opacity:1; padding:10px 20px; border:1px solid rgba(57,255,136,.55); border-radius:999px; background:rgba(4,6,18,.7); }
+  body.v5 .mini { opacity:.8; }
+  .fab { display:none; }
+  body.mobile #ui { inset:auto; left:0; top:0; width:390px; height:844px; zoom:var(--uiz,1); }
+  body.mobile nav { padding:0 20px; height:56px; } body.mobile nav .logo { font-size:16px; }
+  body.mobile nav .links span:not(.pill) { display:none; } body.mobile nav .pill { font-size:13px; padding:7px 14px; }
+  body.mobile.v5 #ui::before { background: linear-gradient(rgba(3,5,18,.78) 0%, rgba(3,5,18,.55) 36%, rgba(3,5,18,0) 50%), linear-gradient(rgba(2,3,12,0) 78%, rgba(2,3,12,.55) 100%); }
+  body.mobile .hero { left:22px; right:22px; top:84px; max-width:none; }
+  body.mobile .hero .kicker { font-size:12px; }
+  body.mobile.v3 .hero h1,body.mobile .hero h1 { font-size:46px; line-height:1.04; margin:10px 0 14px; }
+  body.mobile .hero .tag { font-size:19px; line-height:1.35; }
+  body.mobile.v5 .hero .sub { font-size:13px; line-height:1.6; }
+  body.mobile .icons { flex-wrap:wrap; gap:8px; margin-top:16px; } body.mobile.v5 .icons div { font-size:13px; padding:8px 12px; }
+  body.mobile .mini,body.mobile .anchor .glow-c { display:none; }
+  body.mobile.v5 .tlabel { font-size:12px; }
+  body.mobile .cue { bottom:26px; white-space:nowrap; font-size:13px; }
+  body.mobile .fab { display:block; position:absolute; right:18px; bottom:84px; font-size:14px; padding:12px 16px; border-radius:999px; color:#29d3ff; background:rgba(5,8,26,.85); border:1.5px solid rgba(41,211,255,.6); }
+  /* v6: v1 perspective, the sky behind the text is already an even dark tone, so only a faint backing */
+  body.v6 .hero::before { background:radial-gradient(closest-side, rgba(3,5,18,.35), rgba(3,5,18,0)); }
+  body.v2 .hero h1 { text-shadow:0 2px 24px rgba(5,8,30,.6); }
+  body.v2 .hero .tag, body.v2 .hero .sub { text-shadow:0 1px 12px rgba(5,8,30,.8); }
+  #ui { pointer-events:none; }
+  .mono { font-family:'JetBrains Mono',ui-monospace,monospace; }
+  .glow-g { color:var(--frog); text-shadow:0 0 8px rgba(57,255,136,.8), 0 0 22px rgba(57,255,136,.45); }
+  .glow-c { color:var(--cyan); text-shadow:0 0 8px rgba(41,211,255,.8), 0 0 22px rgba(41,211,255,.4); }
+  .glow-p { color:var(--pink); text-shadow:0 0 8px rgba(255,106,213,.8), 0 0 22px rgba(255,106,213,.4); }
+  nav { position:absolute; top:0; left:0; right:0; height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 40px;
+        background:linear-gradient(#02030acc,#02030a00); }
+  nav .logo { font-size:18px; font-weight:700; letter-spacing:.02em; }
+  nav .links { display:flex; gap:28px; font-size:13px; color:var(--dim); align-items:center; }
+  .pill { border:1.5px solid var(--frog); color:var(--frog); padding:7px 16px; border-radius:999px; box-shadow:0 0 14px rgba(57,255,136,.35), inset 0 0 10px rgba(57,255,136,.15); }
+  .hero { position:absolute; left:64px; top:118px; max-width:640px; }
+  .hero .kicker { font-size:13px; letter-spacing:.3em; color:var(--cyan); }
+  .hero h1 { font-size:66px; line-height:1.02; font-weight:700; margin:14px 0 18px; letter-spacing:-.02em; }
+  .hero h1 span { color:var(--frog); text-shadow:0 0 18px rgba(57,255,136,.55); }
+  .hero .tag { font-size:23px; color:#dfe4ff; }
+  .hero .tag em { font-style:normal; color:var(--pink); text-shadow:0 0 12px rgba(255,106,213,.6); }
+  .hero .tag b { font-weight:500; color:var(--cyan); text-shadow:0 0 12px rgba(41,211,255,.6); }
+  .hero .sub { margin-top:14px; font-size:13px; color:var(--dim); letter-spacing:.04em; }
+  .icons { display:flex; gap:10px; margin-top:20px; }
+  .icons div { font-size:12px; padding:6px 12px; border:1px solid #2b3160; border-radius:8px; color:#c6cbef; background:#070a1a99; }
+  .anchor { position:absolute; transform:translate(-50%,-50%); white-space:nowrap; }
+  .tlabel { font-size:12px; letter-spacing:.22em; color:#c9b8ff; text-shadow:0 0 10px rgba(139,92,255,.9); }
+  .cue { position:absolute; bottom:34px; left:50%; transform:translateX(-50%); font-size:13px; letter-spacing:.25em; color:var(--frog); }
+  .chips { display:flex; flex-wrap:wrap; gap:7px; justify-content:center; width:300px; }
+  .chip { font-size:12px; padding:5px 10px; border-radius:999px; border:1.4px solid currentColor; background:#05061099; box-shadow:0 0 10px currentColor; }
+  .card { width:430px; padding:22px 24px; border-radius:18px; background:linear-gradient(160deg,#0b1a36d9,#050b1ce6); border:1.4px solid #2c6bff88;
+          box-shadow:0 0 30px rgba(41,120,255,.25), inset 0 0 30px rgba(41,211,255,.06); backdrop-filter:blur(6px); white-space:normal; }
+  .card .meta { font-size:12px; color:var(--cyan); letter-spacing:.14em; }
+  .card h3 { font-size:25px; margin:8px 0 2px; }
+  .card .role { color:var(--dim); font-size:14px; margin-bottom:12px; }
+  .card li { font-size:14px; line-height:1.45; margin:0 0 8px 16px; color:#d6dcf5; }
+  .card .tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; }
+  .card .tags span { font-size:11px; padding:4px 9px; border-radius:999px; border:1px solid #3d7bff; color:#9dc0ff; }
+  .card .cs { margin-top:14px; font-size:13px; color:var(--frog); }
+  .bubble { position:absolute; width:270px; padding:12px 16px; border-radius:18px; font-size:14px; line-height:1.4; white-space:normal; background:#06081acc; }
+  .bubble.problem { border:1.6px solid #4d8dff; box-shadow:0 0 16px rgba(77,141,255,.45); }
+  .bubble.result { border:1.6px solid var(--frog); box-shadow:0 0 16px rgba(57,255,136,.45); }
+  .bubble small { display:block; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; margin-bottom:4px; opacity:.8; }
+  .gauge { position:absolute; right:34px; top:120px; bottom:120px; width:70px; }
+  .gauge .rail { position:absolute; right:10px; top:0; bottom:0; width:2px; background:linear-gradient(#29d3ff,#8b5cff 70%,#29d3ff00); box-shadow:0 0 10px #29d3ff; }
+  .gauge .m { position:absolute; right:0; font-size:11px; color:var(--dim); display:flex; align-items:center; gap:8px; }
+  .gauge .m i { width:9px; height:9px; border-radius:50%; border:1.5px solid #6f78a8; background:#02030a; display:inline-block; }
+  .gauge .m.on { color:var(--ink); } .gauge .m.on i { border-color:var(--frog); background:var(--frog); box-shadow:0 0 10px var(--frog); }
+  .mini { position:absolute; right:30px; bottom:26px; width:92px; height:92px; opacity:.9; }
+  .chat { position:absolute; right:90px; top:50%; transform:translateY(-50%); width:470px; padding:30px 30px 26px; border-radius:22px;
+          background:linear-gradient(160deg,#0a1230e6,#04081ae6); border:1.5px solid #29d3ff88; box-shadow:0 0 40px rgba(41,211,255,.22); }
+  .chat h2 { font-size:44px; line-height:1; margin-bottom:8px; }
+  .chat p { color:var(--dim); font-size:14px; margin-bottom:18px; }
+  .field { border:1px solid #2a3566; border-radius:10px; padding:11px 14px; font-size:13px; color:#6d76a3; margin-bottom:10px; background:#03061299; }
+  .row { display:flex; gap:10px; } .row .field { flex:1; }
+  .seg { display:flex; gap:8px; margin-bottom:10px; } .seg span { font-size:12px; padding:7px 12px; border-radius:999px; border:1px solid #2a3566; color:#8c93b8; }
+  .seg span.on { border-color:var(--pink); color:var(--pink); box-shadow:0 0 10px rgba(255,106,213,.4); }
+  .send { margin-top:6px; text-align:center; padding:13px; border-radius:12px; font-weight:700; color:#02030a; background:var(--frog); box-shadow:0 0 22px rgba(57,255,136,.6); }
+  .alt { display:flex; gap:10px; margin-top:12px; } .alt div { flex:1; text-align:center; font-size:13px; padding:10px; border-radius:10px; border:1.4px solid #3d7bff; color:#9dc0ff; }
+  .mlabel { font-size:14px; } .mlabel b { display:block; font-size:10px; letter-spacing:.2em; color:var(--dim); font-family:'JetBrains Mono',monospace; font-weight:400; }
+  .under-label { font-size:15px; text-align:center; } .under-label b { display:block; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.18em; font-weight:400; color:var(--dim); margin-top:4px; }
+</style></head>
+<body><div id="stage"></div><div id="ui"></div>
+<script type="importmap">{ "imports": { "three": "./three/build/three.module.js", "three/addons/": "./three/examples/jsm/" } }</script>
+<script type="module">
+const p = new URLSearchParams(location.search), s = p.get('s') || 'hero';
+const ui = document.getElementById('ui');
+const add = (html) => ui.insertAdjacentHTML('beforeend', html);
+const at = (x, y, z, html, dx = 0, dy = 0) => { let [sx, sy] = window.__project(x, y, z); const zf = window.__uiz || 1; sx /= zf; sy /= zf; add(`<div class="anchor" style="left:${sx + dx}px;top:${sy + dy}px">${html}</div>`); };
+const nav = (active) => add(`<nav><div class="logo mono glow-g">janys.ponder</div><div class="links mono"><span>overview</span><span class="glow-c">☁ ask the frog</span><span class="pill">let's chat</span></div></nav>`);
+const mini = (t) => add(`<svg class="mini" viewBox="0 0 100 100"><path d="M14 18 H70 Q86 18 86 34 V66 Q86 82 70 82 H14" fill="none" stroke="#3a4170" stroke-width="3"/>
+  <path d="M14 18 H70 Q86 18 86 34 V66 Q86 82 70 82 H14" fill="none" stroke="#39ff88" stroke-width="3" pathLength="100" stroke-dasharray="${t} 100" style="filter:drop-shadow(0 0 4px #39ff88)"/>
+  <text x="50" y="54" text-anchor="middle" fill="#8c93b8" font-size="10" font-family="JetBrains Mono">${Math.round(t)}%</text></svg>`);
+const gauge = (on) => { const yrs = [['2026', 'BAM'], ['2025', 'Harvard Grid'], ['2025', 'Cathay'], ['2025', 'DfG × ISF'], ['2024', 'Ekimetrics'], ['2022', 'ACME Lab']];
+  add(`<div class="gauge"><div class="rail"></div>${yrs.map(([y, n], i) => `<div class="m mono ${i === on ? 'on' : ''}" style="top:${8 + i * 16}%">${i === on ? n + ' · ' : ''}${y}<i></i></div>`).join('')}</div>`); };
+
+window.addEventListener('world-ready', async () => {
+  await document.fonts.ready;
+  if (s === 'hero') {
+    nav(); mini(2);
+    add(`<div class="hero"><div class="kicker mono">HI, I'M</div><h1>Janys <span>(Jiayang)</span> Li</h1>
+      <div class="tag">amphibian in the <em>how you think</em> &amp; <b>how I build</b></div>
+      <div class="sub mono">DATA SCIENTIST · PRODUCT BUILDER · M.S. DATA SCIENCE @ HARVARD</div>
+      <div class="icons mono"><div>in LinkedIn</div><div>⌥ GitHub</div><div>✉ janysli.jy@gmail.com</div></div></div>`);
+    at(...(window.__cloud || [-4.5, 8.2, -3]), `<div class="mono glow-c" style="font-size:13px;letter-spacing:.12em">ask the frog</div>`);
+    [['AI &amp; ML', -8], ['PRODUCT', -2], ['PROG &amp; DATA', 4]].forEach(([t, x]) => at(x, 2.4, -0.5, `<div class="tlabel mono">${t}</div>`));
+    add(`<div class="cue mono">SCROLL TO HOP &nbsp;→</div><div class="fab mono">☁ ask the frog</div>`);
+  }
+  if (s === 'hop') {
+    nav(); mini(9);
+    const ai = ['Agentic AI', 'LLM Agents', 'RAG', 'Generative AI', 'Model Evaluation', 'NLP', 'Prompt Engineering', 'Automation'];
+    const pr = ['0→1 Product', 'Product Strategy', 'Roadmapping', 'Journey Mapping', 'User Research', 'A/B Testing'];
+    at(-8, 5.6, -0.5, `<div class="chips mono" style="color:#b99cff">${ai.map(k => `<span class="chip">${k}</span>`).join('')}</div>`);
+    at(-1.2, 6.3, -0.5, `<div class="chips mono" style="color:#39ff88">${pr.map(k => `<span class="chip">${k}</span>`).join('')}</div>`);
+    [['AI &amp; ML', -8], ['PRODUCT', -2], ['PROG &amp; DATA', 4]].forEach(([t, x]) => at(x, -0.9, 2, `<div class="tlabel mono">${t}</div>`));
+    add(`<div class="cue mono">HOP 2 / 3 &nbsp;→</div>`);
+  }
+  if (s === 'dive') {
+    nav(); mini(24);
+    at(18.5, 5.2, 0, `<div class="mono glow-g" style="font-size:15px;letter-spacing:.3em">DIVE!</div>`);
+    at(24, -4.6, -1, `<div class="mono glow-c" style="font-size:12px;letter-spacing:.2em">↓ EXPERIENCE · 2026 → 2022</div>`);
+    add(`<div class="cue mono">SCROLL TO DIVE &nbsp;↓</div>`);
+  }
+  if (s === 'under') {
+    nav(); mini(34); gauge(0);
+    at(24, -7.6, 0, `<div class="card"><div class="meta mono">JUN – AUG 2026 · NEW YORK</div><h3>Balyasny Asset Management</h3>
+      <div class="role">Summer Associate, Data Scientist</div><ul>
+      <li>Built AI forecasting tools and agents for an investment firm.</li>
+      <li>Built AI agents that test and explain models.</li></ul>
+      <div class="tags mono"><span>Agentic AI</span><span>Forecasting</span><span>Model Eval</span><span>Stakeholders</span></div></div>`);
+    at(18.2, -3.4, 0, `<div class="bubble problem" style="transform:translate(-10%,-100%)"><small class="mono" style="color:#8fb6ff">THE CLIENT</small>Can we trust our forecasts, faster?</div>`);
+    at(29.8, -6.2, 0, `<div class="bubble result" style="transform:translate(-50%,-100%)"><small class="mono glow-g">TA-DA!</small>AI agents that test and explain models in minutes.</div>`);
+  }
+  if (s === 'seabed') {
+    nav(); mini(96);
+    add(`<div class="chat"><div class="mono glow-c" style="font-size:12px;letter-spacing:.3em;margin-bottom:10px">SEABED · YOU MADE IT</div>
+      <h2 class="glow-g">Let's Chat</h2><p>Hiring, building something, or just curious how people think? Send a message in a bottle.</p>
+      <div class="row"><div class="field">Name</div><div class="field">Email</div></div><div class="field">Organization (optional)</div>
+      <div class="seg mono"><span class="on">Hiring</span><span>Collaboration</span><span>Just saying hi</span></div>
+      <div class="field" style="height:78px">Your message…</div><div class="send">Send the bottle ↑</div>
+      <div class="alt mono"><div>in Connect on LinkedIn</div><div>✉ Email me</div></div></div>`);
+    at(-6.5, FLOOR_Y() + 3.2, 1.2, `<div class="mono glow-p" style="font-size:12px;letter-spacing:.18em">message in a bottle ↓</div>`);
+  }
+  if (s === 'map') {
+    const L = (x, y, t, n, dx = 0, dy = 0) => at(x, y, 0, `<div class="mlabel"><b>${n}</b>${t}</div>`, dx, dy);
+    L(-15, 7.5, 'Surface hub', '01'); L(-2, 5.5, 'Terraces: skills', '02'); L(21, 7.5, 'Dive', '03');
+    [['BAM · 2026', -7], ['Harvard Grid · 2025–', -15], ['Cathay Pacific · 2025', -22.5], ['Develop for Good × ISF · 2025', -30], ['Ekimetrics · 2024', -37], ['ACME Lab · 2022–24', -43]]
+      .forEach(([t, y]) => at(30.5, y, 0, `<div class="mono" style="font-size:13px;color:#cfd6ff;transform:translateX(50%)">${t}</div>`, 0, 0));
+    L(-4, -53.5, "Seabed: Let's Chat", '04');
+  }
+  if (s === 'lineup') {
+    [['BAM', 'octopus', -12.5], ['Harvard Grid', 'sea turtle', -6.5], ['Cathay Pacific', 'flying fish', -1], ['DfG × ISF', 'starfish', 4.2], ['Ekimetrics', 'hermit crab', 9], ['ACME Lab', 'jellyfish', 13.6]]
+      .forEach(([n, a, x]) => at(x, -3.4, 0, `<div class="under-label">${n}<b>${a}</b></div>`));
+  }
+  if (s === 'frogs') {
+    [['idle / sit', -8.5], ['hop', -2.6], ['ta-da!', 3], ['swim', 10.4]].forEach(([n, x]) => at(x, -1.2, 0, `<div class="under-label mono" style="color:#39ff88">${n}</div>`));
+  }
+  document.title = 'ready';
+});
+function FLOOR_Y() { return -62; }
+</script>
+<script type="module">
+  const v = new URLSearchParams(location.search).get('v');
+  if (v === '2' || v === '3') document.body.classList.add('v2');
+  if (['3', '4', '5'].includes(v)) document.body.classList.add('v3');
+  if (v === '4' || v === '5') document.body.classList.add('v4');
+  if (v === '5') document.body.classList.add('v5');
+  if (v === '2' || v === '5') document.body.classList.add('v2');
+  const P = new URLSearchParams(location.search);
+  if (P.get('m') === '1' || innerWidth <= 600) { document.body.classList.add('mobile');
+    const z = (+(P.get('w') || innerWidth)) / 390; window.__uiz = z; document.body.style.setProperty('--uiz', z); }
+  if (v === '7') ['v2', 'v3', 'v4', 'v5', 'v6'].forEach(c => document.body.classList.add(c));
+  if (v === '6') ['v2', 'v3', 'v4', 'v5', 'v6'].forEach(c => document.body.classList.add(c));
+  import(v === '7' ? './world7.js' : v === '6' ? './world6.js' : v === '5' ? './world5.js' : v === '4' ? './world4.js' : v === '3' ? './world3.js' : v === '2' ? './world2.js' : './world.js');
+</script>
+</body></html>
