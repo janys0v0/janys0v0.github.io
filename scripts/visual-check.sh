@@ -5,7 +5,7 @@
 set -e
 cd "${0:A:h}/.."
 OUT=${1:-/tmp/janys-visual}; shift 2>/dev/null || true
-STOPS=(${@:-0 1 3 4 5 6 7 8 9 10 11})
+if (( $# )); then STOPS=("$@"); else STOPS=(0 1 3 4 5 6 7 8 9 10 11); fi
 mkdir -p "$OUT"
 (cd out && python3 -m http.server 8799 >/dev/null 2>&1 &) ; sleep 1
 CH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"

@@ -9,8 +9,8 @@ import { ANIMAL_X, CARD_X, EXP_DEPTHS, FROG_X, stopIndex, STOPS, type P3 } from 
 export type Anchor = {
   id: string;
   pos: P3;
-  /** When is it visible? "always", from a stop onward ("seen"), or only while the frog is at that stop ("at"). */
-  show: { when: "always" } | { when: "seen" | "at"; stop: number };
+  /** When is it visible? "always"; from a stop onward ("seen"); while the frog is on that stop, including the hop away ("current"); or only once it has landed there ("at"). */
+  show: { when: "always" } | { when: "seen" | "at" | "current"; stop: number };
   /** On phones, cards leave the 3D anchor and sit in a bottom sheet instead. */
   pinOnMobile?: boolean;
   mobile?: boolean; // shown on phones (default true)
@@ -20,7 +20,7 @@ export type Anchor = {
 const TERRACE_X = [-8, -2, 4];
 export const ANCHORS: Anchor[] = [
   ...terraces.map((t, i): Anchor => ({ id: `t-${t.id}`, pos: [TERRACE_X[i], -0.3, 1.9], show: { when: "always" }, zone: "land" })),
-  ...terraces.map((t, i): Anchor => ({ id: `c-${t.id}`, pos: [TERRACE_X[i], 7.4, -0.5], show: { when: "seen", stop: i + 1 }, zone: "land" })),
+  ...terraces.map((t, i): Anchor => ({ id: `c-${t.id}`, pos: [TERRACE_X[i], 7.4, -0.5], show: { when: "current", stop: i + 1 }, zone: "land" })),
   { id: "cloud", pos: [0.2, 10.4, -3], show: { when: "always" }, mobile: false, zone: "land" },
   ...experience.flatMap((e, i): Anchor[] => {
     const y = EXP_DEPTHS[i], stop = stopIndex(e.id);

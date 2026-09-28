@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { profile } from "@/content/profile";
+import { ThemeToggle } from "./ThemeToggle";
 
 // The homepage text layer. It sits above the 3D scene, and is real HTML so it loads first and stays readable.
 export function HeroOverlay() {
@@ -32,6 +33,7 @@ export function SiteNav() {
       <Link href="/" className="glow-frog text-[17px] font-semibold">{profile.handle}</Link>
       <div className="flex items-center gap-6 text-[14px] text-muted">
         <Link href="/overview" className="hidden sm:inline">overview</Link>
+        <ThemeToggle />
         <Link href="/#chat" className="rounded-full border-[1.5px] border-frog px-4 py-1.5 text-frog">let&apos;s chat</Link>
       </div>
     </nav>

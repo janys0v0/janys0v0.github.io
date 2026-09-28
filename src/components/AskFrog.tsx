@@ -35,7 +35,7 @@ export function AskFrog() {
   return (
     <>
       <button onClick={() => setOpen(true)} aria-haspopup="dialog" aria-expanded={open}
-        className="fixed bottom-7 right-4 z-30 rounded-full border-[1.5px] border-tech/70 bg-[#050818]/90 px-4 py-2.5 font-mono text-[13px] text-tech shadow-[0_0_16px_rgba(41,211,255,0.35)] sm:right-8 sm:bottom-8">
+        className="fixed bottom-7 right-4 z-30 whitespace-nowrap rounded-full border-[1.5px] border-tech/70 bg-[#050818]/90 px-3.5 py-2.5 font-mono text-[12px] sm:px-4 sm:text-[13px] text-tech shadow-[0_0_16px_rgba(41,211,255,0.35)] sm:right-8 sm:bottom-8">
         ☁ ask the frog
       </button>
       {open && (

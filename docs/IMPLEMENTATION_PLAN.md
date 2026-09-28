@@ -82,6 +82,10 @@ Octopus tentacles wave in sequence · jellyfish bell pulses and tentacles trail 
 
 ---
 
+## Status (2026-09-28)
+
+Phases 0–7 built, tested and pushed on `redesign`. Remaining: merge to `main` to go live (needs Janys's OK), optional Formspree ID, ACME findings check.
+
 ## Build order
 
 Each phase ends with a deploy you can open. Times assume I build and you review.

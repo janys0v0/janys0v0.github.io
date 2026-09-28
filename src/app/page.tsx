@@ -8,7 +8,7 @@ import { JOURNEY_VH } from "@/scene/stops";
 // hop across the skill terraces → dive → swim past each experience → the seabed (Let's Chat).
 export default function Home() {
   return (
-    <main className="relative bg-[linear-gradient(#050818,#141c44_62%,#5a6aa8)]" style={{ height: `${(JOURNEY_VH + 1) * 100}svh` }}>
+    <main className="relative bg-[linear-gradient(#050818,#141c44_62%,#5a6aa8)] [html[data-theme=dusk]_&]:bg-[linear-gradient(#1a0f3a,#5a2a78_62%,#ff8fc8)]" style={{ height: `${(JOURNEY_VH + 1) * 100}svh` }}>
       <div className="fixed inset-0 h-svh">
         <HomeScene />
       </div>
@@ -22,7 +22,7 @@ export default function Home() {
         <Link href="/overview" className="font-mono text-frog">See my experience and skills →</Link>
       </div>
       <p id="scroll-cue" aria-hidden data-on="true"
-        className="fixed bottom-7 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full border border-frog/60 bg-ink/70 px-5 py-2.5 font-mono text-[13px] sm:text-[14px] tracking-[0.25em] text-frog transition-opacity duration-500 data-[on=false]:opacity-0">
+        className="fixed bottom-7 left-4 z-10 whitespace-nowrap rounded-full border border-frog/60 bg-ink/70 px-4 py-2.5 font-mono text-[12px] tracking-[0.12em] sm:left-1/2 sm:-translate-x-1/2 sm:px-5 sm:text-[14px] sm:tracking-[0.25em] text-frog transition-opacity duration-500 data-[on=false]:opacity-0">
         SCROLL TO HOP →
       </p>
     </main>

@@ -65,6 +65,7 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
 
   const pond = useMemo(() => buildPond(tier, { w: size.width * gl.getPixelRatio(), h: size.height * gl.getPixelRatio() }), [tier]);
   const journey = useMemo(() => { const j = new Journey(pond.frog); j.onSplash = (x) => pond.underwater.splash(x); return j; }, [pond]);
+  useEffect(() => { pond.cloud.visible = !tier.mobile; }, [pond, tier.mobile]); // phones use the floating button instead
 
   const composer = useMemo(() => {
     const c = new EffectComposer(gl);
@@ -148,7 +149,8 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
     // anchored HTML
     for (const a of ANCHORS) {
       const el = anchorEls.get(a.id); if (!el) continue;
-      let on = a.show.when === "always" ? true : a.show.when === "seen" ? journey.seen >= a.show.stop : arrived && journey.reached === a.show.stop;
+      const w = a.show.when;
+      let on = w === "always" ? true : w === "seen" ? journey.seen >= a.show.stop : w === "current" ? journey.reached === a.show.stop : arrived && journey.reached === a.show.stop;
       if (a.zone === "land" && camera.position.y < SURF + 2) on = false; // land labels belong above the water
       el.dataset.on = String(on);
       if (tier.mobile && a.pinOnMobile) continue;
