@@ -6,6 +6,8 @@ export function HeroOverlay() {
   const { tagline, links, email } = profile;
   return (
     <section className="relative z-10 px-6 pt-28 sm:px-16 sm:pt-32 max-w-[760px]">
+      {/* faint backing so the text keeps its contrast over the 3D sky */}
+      <div aria-hidden className="absolute -inset-x-10 top-16 -bottom-6 -z-10 bg-[radial-gradient(closest-side,rgba(3,5,18,0.4),rgba(3,5,18,0))]" />
       <p className="font-mono text-[13px] tracking-[0.3em] text-tech">HI, I&apos;M</p>
       <h1 className="mt-3 text-[46px] sm:text-[72px] font-bold leading-[1.04] tracking-tight">
         Janys <span className="glow-frog">(Jiayang)</span> Li
