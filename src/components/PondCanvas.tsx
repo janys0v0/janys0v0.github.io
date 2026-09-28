@@ -63,11 +63,20 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
   const cam = useRef<{ pos: THREE.Vector3; look: THREE.Vector3 } | null>(null);
   const lastStop = useRef(-1);
   const scrollVH = useRef(0);
+  const banner = useRef<{ x: number } | null>(null);
   const land = tier.mobile ? LAND.mobile : LAND.desktop;
 
   const pond = useMemo(() => buildPond(tier, { w: size.width * gl.getPixelRatio(), h: size.height * gl.getPixelRatio() }), [tier]);
   const journey = useMemo(() => { const j = new Journey(pond.frog); j.onSplash = (x) => pond.underwater.splash(x); return j; }, [pond]);
   useEffect(() => { pond.cloud.visible = !tier.mobile; }, [pond, tier.mobile]); // phones use the floating button instead
+  useEffect(() => {
+    if (!new URLSearchParams(location.search).has("banner")) return;
+    document.documentElement.dataset.banner = "true";
+    // put the frog (x = -11.8) about two-thirds of the way across the frame
+    const c = camera as THREE.PerspectiveCamera, halfW = 19 * Math.tan(THREE.MathUtils.degToRad(c.fov / 2)) * c.aspect;
+    banner.current = { x: -11.8 - 0.64 * halfW };
+    pond.cloud.visible = false;
+  }, [camera, pond, size]);
 
   const composer = useMemo(() => {
     const c = new EffectComposer(gl);
@@ -154,6 +163,9 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
     if (!cam.current || amp === 0) cam.current = { pos: t.pos.clone(), look: t.look.clone() };
     else { const k = 1 - Math.exp(-Math.min(delta, 0.05) * 3.2); cam.current.pos.lerp(t.pos, k); cam.current.look.lerp(t.look, k); }
     camera.position.copy(cam.current.pos); camera.lookAt(cam.current.look);
+    if (banner.current) { // ?banner: LinkedIn background framing, frog and sign in the right third
+      const b = banner.current; camera.position.set(b.x, 4.3, 19); camera.lookAt(b.x, 2.6, 0);
+    }
 
     const activeExp = arrived ? STOPS[journey.reached].exp ?? null : null;
     pond.update(clock.current, delta, look.current, amp, activeExp, camera.position.y);
@@ -219,7 +231,7 @@ export default function PondCanvas() {
   };
   return (
     <>
-      <Canvas className="!absolute inset-0" dpr={[1, 1.5]} gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }} camera={{ fov: 36, position: [-2.5, 6.2, 34] }} aria-hidden>
+      <Canvas className="!absolute inset-0" dpr={typeof location !== "undefined" && location.search.includes("banner") ? 2 : [1, 1.5]} gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }} camera={{ fov: 36, position: [-2.5, 6.2, 34] }} aria-hidden>
         <World key={`${tier.mobile}-${tier.low}-${tier.theme}`} tier={tier} onStop={onStop} />
       </Canvas>
       <SceneOverlay mobile={tier.mobile} />

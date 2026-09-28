@@ -55,3 +55,10 @@ html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
 .lenis.lenis-stopped { overflow: hidden; }
+
+/* ?banner: scene only, no text or UI (for social background images) */
+html[data-banner] nav, html[data-banner] [data-hero], html[data-banner] #scroll-cue, html[data-banner] [aria-haspopup="dialog"],
+html[data-banner] .chat-panel, html[data-banner] .pointer-events-none.absolute.inset-0, html[data-banner] nav[aria-label] { display: none !important; }
+html[data-banner], html[data-banner] body { overflow: hidden; }
+html[data-banner] main { height: 100vh !important; }
+html[data-banner] main > div.fixed { position: fixed; inset: 0; width: 100vw; height: 100vh; }
