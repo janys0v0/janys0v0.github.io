@@ -59,6 +59,7 @@ export type Pond = {
   cloud: THREE.Group;
   cloudBase: { x: number; y: number };
   underwater: Underwater;
+  pagoda: THREE.Group;
   reflector: Reflector | null;
   bloom: { strength: number; radius: number; threshold: number };
   update: (t: number, dt: number, look: { x: number; y: number }, amp: number, activeExp: string | null, camY: number) => void;
@@ -140,8 +141,9 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
   }
 
   // ── pagoda: ink-black shapes with neon edges ─────────────────────────────
+  const pagoda = new THREE.Group();
   {
-    const g = new THREE.Group(); g.position.set(27, SURF, -88); g.rotation.y = -0.5; scene.add(g);
+    const g = pagoda; g.position.set(27, SURF, -88); g.rotation.y = -0.5; scene.add(g);
     const ink = new THREE.MeshBasicMaterial({ color: "#070812" });
     const add = (geo: THREE.BufferGeometry, pos: P3, color: string, { rotY = 0, sc = [1, 1, 1] as P3, k = 1.05 } = {}) => {
       const m = new THREE.Mesh(geo, ink); m.position.set(...pos); m.rotation.y = rotY; m.scale.set(...sc); g.add(m);
@@ -422,7 +424,7 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
 
   const bloom = tier.mobile ? { strength: 0.45, radius: 0.5, threshold: 0.42 } : { strength: 0.78, radius: 0.5, threshold: 0.42 };
   return {
-    scene, frog, reflector, bloom, frogFx: { halo, pool, light: fl }, cloud: cg, cloudBase, underwater,
+    scene, frog, reflector, bloom, frogFx: { halo, pool, light: fl }, cloud: cg, cloudBase, underwater, pagoda,
     update(t, dt, look, amp, activeExp, camY) {
       for (const f of tick) f(t, dt, amp);
       frog.update(dt, t, look, amp);

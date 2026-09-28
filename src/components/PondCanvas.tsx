@@ -84,6 +84,8 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
     // put the frog (x = -11.8) about two-thirds of the way across the frame
     banner.current = { x: -14.1 }; // between the sign (-16.8) and the frog (-11.8)
     pond.cloud.visible = false;
+    // banner layout: __(temple)______sign_frog__ : the temple sits about a quarter of the way across
+    pond.pagoda.position.x = -150; pond.pagoda.rotation.y = -0.1;
     const bloom = composer.passes[1] as UnrealBloomPass; bloom.strength = 0.5; bloom.threshold = 0.5; // softer glow
   }, [camera, pond, size, composer]);
 
