@@ -44,7 +44,7 @@ export function LetsChat({ standalone = false }: { standalone?: boolean }) {
   const err = (k: string) => errors[k] && <span id={`${k}-err`} className="mt-1 block text-[12px] text-[#ff9ab8]">{errors[k]}</span>;
 
   return (
-    <section id="lets-chat" data-chat aria-labelledby="chat-title"
+    <section id="lets-chat" data-chat data-lenis-prevent aria-labelledby="chat-title"
       className={standalone ? "rounded-3xl border border-tech/50 bg-[linear-gradient(160deg,#0a1230f0,#04081af0)] p-6 sm:p-8"
         : "chat-panel fixed z-20 overflow-y-auto rounded-3xl border border-tech/50 bg-[linear-gradient(160deg,#0a1230f2,#04081af2)] p-5 shadow-[0_0_40px_rgba(41,211,255,0.22)] sm:p-7 inset-x-3 bottom-3 max-h-[70svh] sm:inset-x-auto sm:right-[max(5vw,2rem)] sm:top-1/2 sm:bottom-auto sm:w-[460px] sm:-translate-y-1/2 sm:max-h-[86svh]"}>
       <p className="font-mono text-[12px] tracking-[0.3em] text-tech">SEABED · YOU MADE IT</p>

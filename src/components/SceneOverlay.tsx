@@ -68,16 +68,11 @@ export function SceneOverlay({ mobile }: { mobile: boolean }) {
       {experience.map((e) => (
         <div key={e.id}>
           <article ref={reg(`card-${e.id}`)} data-on="false" style={mobile ? undefined : offscreen} aria-label={`${e.org}, ${e.role}`}
-            className={`${mobile ? "fixed inset-x-3 bottom-[76px] max-h-[40svh] overflow-y-auto" : `${base} w-[430px]`} pointer-events-auto rounded-2xl border border-[#2c6bff88] bg-[linear-gradient(160deg,#0b1a36f2,#050b1cf2)] p-5 sm:p-6 shadow-[0_0_30px_rgba(41,120,255,0.25)] transition-opacity duration-500 data-[on=false]:pointer-events-none data-[on=false]:opacity-0`}>
+            className={`${mobile ? "fixed inset-x-3 bottom-[76px] max-h-[34svh] overflow-y-auto" : `${base} w-[380px]`} pointer-events-auto rounded-2xl border border-[#2c6bff88] bg-[linear-gradient(160deg,#0b1a36f2,#050b1cf2)] p-5 sm:p-6 shadow-[0_0_30px_rgba(41,120,255,0.25)] transition-opacity duration-500 data-[on=false]:pointer-events-none data-[on=false]:opacity-0`}>
             <p className="font-mono text-[12px] tracking-[0.14em] text-tech uppercase">{e.dates} · {e.location}</p>
             <h3 className="mt-1.5 text-[20px] sm:text-[24px] font-bold leading-tight">{e.org}</h3>
             <p className="text-[14px] text-muted">{e.role}</p>
-            <ul className="mt-3 list-disc space-y-1.5 pl-4 text-[14px] leading-snug text-[#d6dcf5]">
-              {e.bullets.slice(0, mobile ? 3 : 2).map((b) => <li key={b}>{b}</li>)}
-            </ul>
-            <ul className="mt-3 flex flex-wrap gap-1.5">
-              {e.tags.map((t) => <li key={t} className="rounded-full border border-[#3d7bff] px-2.5 py-0.5 font-mono text-[11px] sm:text-[12px] text-[#9dc0ff]">{t}</li>)}
-            </ul>
+            <p className="mt-3 text-[14px] sm:text-[15px] leading-snug text-[#d6dcf5]">{e.summary}</p>
             {e.link && (
               <a href={e.link.href} {...(e.link.href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})}
                 className="mt-3 inline-block font-mono text-[13px] sm:text-[14px] text-frog hover:underline">
@@ -103,7 +98,10 @@ export function SceneOverlay({ mobile }: { mobile: boolean }) {
 
 /** Depth gauge: years down the right edge while underwater; click a year to swim there. */
 export function DepthGauge({ mobile }: { mobile: boolean }) {
-  const go = (id: string) => window.scrollTo({ top: STOPS[stopIndex(id)].at * window.innerHeight, behavior: "smooth" });
+  const go = (id: string) => {
+    const y = STOPS[stopIndex(id)].at * window.innerHeight, l = (window as unknown as { __lenis?: { scrollTo: (y: number, o: object) => void } }).__lenis;
+    if (l) l.scrollTo(y, { duration: 1.6 }); else window.scrollTo({ top: y, behavior: "smooth" });
+  };
   return (
     <nav ref={reg("gauge")} data-on="false" aria-label="Experience by year"
       className="fixed right-2 sm:right-6 top-1/2 z-10 -translate-y-1/2 transition-opacity duration-500 data-[on=false]:pointer-events-none data-[on=false]:opacity-0">

@@ -5,12 +5,16 @@
 //   water → *   : swim  (kicking glide, body tilted along the path; "ta-da" on arrival at an experience)
 import * as THREE from "three";
 import type { Frog } from "./frog";
-import { STOPS, SURF } from "./stops";
+import { SEABED_Y, STOPS, SURF } from "./stops";
 
 type Move = { from: THREE.Vector3; to: THREE.Vector3; t: number; dur: number; mode: "hop" | "dive" | "swim" };
 type Target = { p: THREE.Vector3; stop: number }; // stop = -1 for a via point
 const CROUCH = 0.13, LAND = 0.14;
 const under = (v: THREE.Vector3) => v.y < SURF - 0.3;
+// zone boundaries the frog must pass through: land (0) ↔ water column (1) ↔ seabed (2)
+const zoneOf = (v: THREE.Vector3) => (v.y < SEABED_Y + 3 ? 2 : under(v) ? 1 : 0);
+const LEDGE = new THREE.Vector3(16.4, 0.64, -0.3), SPLASH = new THREE.Vector3(21, -3.2, 0), SEA_GATE = new THREE.Vector3(22, SEABED_Y + 2, 1);
+const GATES: Record<string, THREE.Vector3[]> = { "0>1": [SPLASH], "1>0": [LEDGE], "1>2": [SEA_GATE], "2>1": [SEA_GATE] };
 
 export class Journey {
   /** Index of the stop the frog has actually reached. */
@@ -31,6 +35,7 @@ export class Journey {
   private tilt = 0;
   private splashed = false;
   private idleT = 0;
+  private redirect = false;
 
   constructor(private frog: Frog) {
     this.pos = new THREE.Vector3(...STOPS[0].pos);
@@ -43,18 +48,20 @@ export class Journey {
     this.goTo(t);
   }
 
+  /** Re-plan from where the frog is right now: no queue of past scroll steps, skipped stops are skipped,
+   *  and a change of direction turns the frog around mid-move. */
   goTo(t: number) {
     if (t === this.target) return;
-    // plan landings from the last planned stop toward the new target (via points included)
-    const last = [...this.queue].reverse().find((q) => q.stop >= 0)?.stop ?? this.reached;
-    const step = t > last ? 1 : -1;
-    for (let i = last + step; step > 0 ? i <= t : i >= t; i += step) {
-      const s = STOPS[i], leaving = STOPS[i - step];
-      const via = step > 0 ? s.via ?? [] : [...(leaving.via ?? [])].reverse();
-      for (const v of via) this.queue.push({ p: new THREE.Vector3(...v), stop: -1 });
-      this.queue.push({ p: new THREE.Vector3(...s.pos), stop: i });
-    }
     this.target = t;
+    const dest = new THREE.Vector3(...STOPS[t].pos);
+    const path: Target[] = [];
+    let z = zoneOf(this.pos); const zt = zoneOf(dest);
+    while (z !== zt) { const nz = z + Math.sign(zt - z); for (const g of GATES[`${z}>${nz}`]) path.push({ p: g.clone(), stop: -1 }); z = nz; }
+    path.push({ p: dest, stop: t });
+    const m = this.move;
+    if (m && this.phase !== "land" && m.to.distanceTo(path[0].p) < 0.01) { this.queue = path; return; } // already heading there
+    this.queue = path;
+    if (m && this.phase !== "idle") this.redirect = true; // turn around now instead of finishing the old move
   }
 
   /** Jump straight to a stop (no animation). Used for reduced motion and visual tests. */
@@ -68,16 +75,8 @@ export class Journey {
     dt = Math.min(dt, 1 / 30);
     if (amp === 0 && this.queue.length) this.snapTo(this.target);
 
-    if (this.phase === "idle" && this.queue.length) {
-      const to = this.queue[0].p, from = this.pos.clone(), dist = from.distanceTo(to);
-      this.speed = this.queue.length > 1 ? 1.6 : 1;
-      const mode: Move["mode"] = under(from) ? "swim" : under(to) ? "dive" : "hop";
-      const dur = mode === "swim" ? Math.min(0.55 + dist * 0.045, 1.5) : mode === "dive" ? 0.95 : Math.min(0.42 + dist * 0.035, 0.8);
-      this.move = { from, to: to.clone(), t: 0, dur: dur / this.speed, mode };
-      this.splashed = false; this.phaseT = 0;
-      if (mode === "swim") { this.phase = "air"; this.frog.setPose("swim"); }
-      else { this.phase = "crouch"; this.frog.setPose("crouch"); }
-    }
+    if (this.redirect) { this.redirect = false; this.move = null; this.phase = "idle"; this.startMove(true); }
+    if (this.phase === "idle" && this.queue.length) this.startMove(false);
 
     this.phaseT += dt;
     const m = this.move;
@@ -86,7 +85,7 @@ export class Journey {
       m.t = Math.min(1, this.phaseT / m.dur);
       const e = m.t < 0.5 ? 2 * m.t * m.t : 1 - Math.pow(-2 * m.t + 2, 2) / 2;
       this.pos.lerpVectors(m.from, m.to, e);
-      if (m.mode === "hop") this.pos.y += (1.1 + m.from.distanceTo(m.to) * 0.12) * Math.sin(Math.PI * m.t);
+      if (m.mode === "hop") this.pos.y += (1.1 + Math.min(m.from.distanceTo(m.to), 14) * 0.1) * Math.sin(Math.PI * m.t);
       if (m.mode === "dive") {
         this.pos.y += 3.2 * Math.sin(Math.PI * Math.min(1, m.t * 1.4)); // high arc, then plunge
         if (!this.splashed && this.pos.y < SURF) { this.splashed = true; this.onSplash(this.pos.x); this.frog.setPose("swim"); }
@@ -116,6 +115,19 @@ export class Journey {
     const hover = this.phase === "idle" && under(this.pos) ? amp * 0.18 * Math.sin(this.idleT * 1.3) : 0;
     this.frog.root.position.set(this.pos.x, this.pos.y + hover, this.pos.z);
     this.frog.root.rotation.set(0, this.facing, this.tilt);
+  }
+
+  /** Start the next leg. midAir = turning around mid-move: skip the crouch and keep going. */
+  private startMove(midAir: boolean) {
+    const to = this.queue[0].p, from = this.pos.clone(), dist = from.distanceTo(to);
+    this.speed = this.queue.length > 1 ? 1.5 : 1;
+    const mode: Move["mode"] = under(from) ? "swim" : under(to) ? "dive" : "hop";
+    const dur = mode === "swim" ? Math.min(0.55 + dist * 0.04, 1.4) : mode === "dive" ? 0.95 : Math.min(0.42 + dist * 0.03, 0.9);
+    this.move = { from, to: to.clone(), t: 0, dur: dur / this.speed, mode };
+    this.splashed = !under(from) && under(to) ? false : true; this.phaseT = 0;
+    if (mode === "swim") { this.phase = "air"; this.frog.setPose("swim"); }
+    else if (midAir) { this.phase = "air"; this.frog.setPose("air"); }
+    else { this.phase = "crouch"; this.frog.setPose("crouch"); }
   }
 
   private arrive() {

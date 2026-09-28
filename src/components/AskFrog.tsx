@@ -45,7 +45,7 @@ export function AskFrog() {
             <p className="font-mono text-[13px] tracking-[0.15em] text-tech">☁ ASK THE FROG</p>
             <button onClick={() => setOpen(false)} aria-label="Close chat" className="rounded-full px-2 text-[20px] leading-none text-muted hover:text-white">×</button>
           </header>
-          <div ref={list} className="flex-1 space-y-3 overflow-y-auto px-4 py-4" aria-live="polite">
+          <div ref={list} data-lenis-prevent className="flex-1 space-y-3 overflow-y-auto px-4 py-4" aria-live="polite">
             {msgs.map((m, i) => (
               <div key={i} className={m.from === "you" ? "flex justify-end" : ""}>
                 <div className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 text-[14px] leading-snug ${m.from === "you" ? "bg-tech/15 text-text" : "border border-frog/40 bg-frog/[0.06]"}`}>

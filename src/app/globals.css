@@ -49,3 +49,9 @@ html[data-no3d] #scroll-cue { display: none; }
 
 /* the "ask the frog" button steps aside where it would cover the chat sheet on phones */
 @media (max-width: 640px) { html[data-stop="chat"] [aria-haspopup="dialog"] { display: none; } }
+
+/* Lenis smooth scrolling */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }

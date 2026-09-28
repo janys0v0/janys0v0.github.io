@@ -2,6 +2,7 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
+import Lenis from "lenis";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
@@ -61,6 +62,7 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
   const clock = useRef(0);
   const cam = useRef<{ pos: THREE.Vector3; look: THREE.Vector3 } | null>(null);
   const lastStop = useRef(-1);
+  const scrollVH = useRef(0);
   const land = tier.mobile ? LAND.mobile : LAND.desktop;
 
   const pond = useMemo(() => buildPond(tier, { w: size.width * gl.getPixelRatio(), h: size.height * gl.getPixelRatio() }), [tier]);
@@ -108,14 +110,18 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
     }
     gsap.registerPlugin(ScrollTrigger);
     ScrollTrigger.config({ ignoreMobileResize: true }); // iOS address-bar resizes must not move the frog
-    const read = () => journey.setScroll(window.scrollY / window.innerHeight);
+    // inertial smooth scrolling for wheels and trackpads (touch keeps the phone's native momentum)
+    const lenis = reduced ? null : new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, smoothWheel: true });
+    const raf = (time: number) => lenis?.raf(time * 1000);
+    if (lenis) { lenis.on("scroll", ScrollTrigger.update); gsap.ticker.add(raf); gsap.ticker.lagSmoothing(0); (window as unknown as { __lenis?: Lenis }).__lenis = lenis; }
+    const read = () => { scrollVH.current = window.scrollY / window.innerHeight; journey.setScroll(scrollVH.current); };
     const st = ScrollTrigger.create({ start: 0, end: "max", onUpdate: read });
     // /#chat (the nav's "let's chat") swims straight to the seabed
-    const toHash = () => { const i = STOPS.findIndex((s) => `#${s.id}` === location.hash); if (i > 0) window.scrollTo({ top: STOPS[i].at * window.innerHeight, behavior: "smooth" }); };
+    const toHash = () => { const i = STOPS.findIndex((s) => `#${s.id}` === location.hash); if (i > 0) scrollToVH(STOPS[i].at); };
     toHash(); window.addEventListener("hashchange", toHash);
     read();
-    return () => { st.kill(); window.removeEventListener("hashchange", toHash); };
-  }, [journey]);
+    return () => { st.kill(); window.removeEventListener("hashchange", toHash); if (lenis) { gsap.ticker.remove(raf); lenis.destroy(); } };
+  }, [journey, reduced]);
 
   useEffect(() => {
     const onMove = (e: PointerEvent) => { look.current = { x: (e.clientX / innerWidth) * 2 - 1, y: -((e.clientY / innerHeight) * 2 - 1) }; };
@@ -138,8 +144,15 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
 
     // follow camera: eased toward the frame for the frog's current zone
     const t = cameraTarget(p, tier.mobile);
+    // drift: between stops the camera already leans toward the next one, so every bit of scrolling moves the scene
+    if (amp > 0 && !journey.hopping) {
+      const i = journey.reached, cur = STOPS[i], next = STOPS[Math.min(i + 1, STOPS.length - 1)];
+      const span = next.at - cur.at, f = span > 0 ? THREE.MathUtils.clamp((scrollVH.current + 0.2 - cur.at) / span, 0, 1) : 0;
+      const dx = THREE.MathUtils.clamp(next.pos[0] - cur.pos[0], -6, 6) * 0.22 * f, dy = THREE.MathUtils.clamp(next.pos[1] - cur.pos[1], -8, 8) * 0.22 * f;
+      t.pos.x += dx; t.look.x += dx; t.pos.y += dy; t.look.y += dy;
+    }
     if (!cam.current || amp === 0) cam.current = { pos: t.pos.clone(), look: t.look.clone() };
-    else { const k = 1 - Math.exp(-delta * 2.6); cam.current.pos.lerp(t.pos, k); cam.current.look.lerp(t.look, k); }
+    else { const k = 1 - Math.exp(-Math.min(delta, 0.05) * 3.2); cam.current.pos.lerp(t.pos, k); cam.current.look.lerp(t.look, k); }
     camera.position.copy(cam.current.pos); camera.lookAt(cam.current.look);
 
     const activeExp = arrived ? STOPS[journey.reached].exp ?? null : null;
@@ -172,6 +185,12 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
   }, 1);
 
   return null;
+}
+
+/** Scroll to a position in viewport heights, through Lenis when it is running. */
+export function scrollToVH(vh: number) {
+  const y = vh * window.innerHeight, l = (window as unknown as { __lenis?: Lenis }).__lenis;
+  if (l) l.scrollTo(y, { duration: 1.6 }); else window.scrollTo({ top: y, behavior: "smooth" });
 }
 
 function webglOk() {
