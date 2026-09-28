@@ -60,6 +60,8 @@ export type Pond = {
   cloudBase: { x: number; y: number };
   underwater: Underwater;
   pagoda: THREE.Group;
+  /** Rendered after the bloom pass: crisp elements that must not glow (the sign lettering). */
+  overlay: THREE.Scene;
   reflector: Reflector | null;
   bloom: { strength: number; radius: number; threshold: number };
   update: (t: number, dt: number, look: { x: number; y: number }, amp: number, activeExp: string | null, camY: number) => void;
@@ -218,6 +220,7 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
   const rim = new THREE.DirectionalLight("#ff9ad8", 0.5); rim.position.set(-40, 10, 20); scene.add(rim);
 
   const underwater = buildUnderwater(scene, tier, softDot);
+  const overlay = new THREE.Scene(); // things drawn after bloom (crisp, never glowing)
   const landFog = { color: new THREE.Color(SKY.fog), near: 45, far: 320 };
   const fog = scene.fog as THREE.Fog;
 
@@ -346,13 +349,14 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
     const wood = new THREE.MeshStandardMaterial({ color: "#5a3d2a", roughness: 0.8 });
     const post = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 3.4, 10), wood); post.position.set(-16.8, 1.7, -0.6);
     const board = new THREE.Mesh(new RoundedBoxGeometry(5.6, 1.5, 0.3, 3, 0.1), new THREE.MeshStandardMaterial({ color: "#0e1a24", roughness: 0.6 })); board.position.set(-16.8, 3.3, -0.6);
-    const txt = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 1.1), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.8, toneMapped: false, depthWrite: false, map: canvasTex(1024, 256, (x) => {
+    const txt = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 1.1), new THREE.MeshBasicMaterial({ transparent: true, opacity: 1, depthWrite: false, map: canvasTex(1024, 256, (x) => {
       x.font = '700 108px "JetBrains Mono", ui-monospace, monospace'; x.textAlign = "center"; x.textBaseline = "middle";
-      x.shadowColor = C.frog; x.shadowBlur = 26; x.fillStyle = "#7dffb0"; x.fillText("janys.ponder", 512, 128); x.shadowBlur = 0; x.globalAlpha = 0.6; x.fillStyle = "#fff"; x.fillText("janys.ponder", 512, 128);
+      x.fillStyle = "#b8ffd4"; x.fillText("janys.ponder", 512, 128); // crisp, no halo
     }) }));
     txt.position.set(-16.8, 3.3, -0.43);
     const frame = line(scene, [[-19.55, 2.6, -0.44], [-19.55, 4, -0.44], [-14.05, 4, -0.44], [-14.05, 2.6, -0.44], [-19.55, 2.6, -0.44]], C.frog, { width: 1.6, k: 0.9, opacity: 0.7 });
-    for (const o of [post, board, txt, frame]) { o.layers.set(1); scene.add(o); }
+    for (const o of [post, board, frame]) { o.layers.set(1); scene.add(o); }
+    txt.layers.set(1); overlay.add(txt); // drawn after the glow pass, so the letters never bloom
     const lan = new THREE.PointLight("#7dffb0", 3, 6, 1.8); lan.position.set(-16.8, 3.5, 1.2); scene.add(lan);
     // pier: planks + posts merged into one mesh
     const pier: THREE.BufferGeometry[] = [];
@@ -424,7 +428,7 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
 
   const bloom = tier.mobile ? { strength: 0.45, radius: 0.5, threshold: 0.42 } : { strength: 0.78, radius: 0.5, threshold: 0.42 };
   return {
-    scene, frog, reflector, bloom, frogFx: { halo, pool, light: fl }, cloud: cg, cloudBase, underwater, pagoda,
+    scene, frog, reflector, bloom, frogFx: { halo, pool, light: fl }, cloud: cg, cloudBase, underwater, pagoda, overlay,
     update(t, dt, look, amp, activeExp, camY) {
       for (const f of tick) f(t, dt, amp);
       frog.update(dt, t, look, amp);
