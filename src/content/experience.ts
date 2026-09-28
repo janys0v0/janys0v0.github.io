@@ -79,7 +79,7 @@ export const experience: Experience[] = [
       "Ran 10 usability tests → 20+ UX improvements → 2× task-completion confidence",
     ],
     tags: ["0→1", "User Research", "PRD", "Usability Testing"],
-    link: { label: "See how we found the 3 biggest usability problems", href: "/portfolio/indochina-starfish" },
+    link: { label: "See how we found the 3 biggest usability problems", href: "/work/isf" },
   },
   {
     id: "ekimetrics",
@@ -111,5 +111,6 @@ export const experience: Experience[] = [
       "Designed a mobile app (Emotion Compass) and ran usability tests with 10+ users → 20+ improvements → +24% user confidence",
     ],
     tags: ["Experiment Design", "Usability Testing", "Mobile App", "Cognitive Science"],
+    link: { label: "Try the Emotion Compass yourself", href: "/work/acme" },
   },
 ];
