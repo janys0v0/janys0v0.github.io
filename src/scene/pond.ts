@@ -62,6 +62,8 @@ export type Pond = {
   pagoda: THREE.Group;
   /** Rendered after the bloom pass: crisp elements that must not glow (the sign lettering). */
   overlay: THREE.Scene;
+  /** Add a lotus (used by banner mode to decorate the frame). */
+  addLotus: (x: number, z: number, s?: number, light?: boolean, em?: number) => void;
   reflector: Reflector | null;
   bloom: { strength: number; radius: number; threshold: number };
   update: (t: number, dt: number, look: { x: number; y: number }, amp: number, activeExp: string | null, camY: number) => void;
@@ -428,7 +430,7 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
 
   const bloom = tier.mobile ? { strength: 0.45, radius: 0.5, threshold: 0.42 } : { strength: 0.78, radius: 0.5, threshold: 0.42 };
   return {
-    scene, frog, reflector, bloom, frogFx: { halo, pool, light: fl }, cloud: cg, cloudBase, underwater, pagoda, overlay,
+    scene, frog, reflector, bloom, frogFx: { halo, pool, light: fl }, cloud: cg, cloudBase, underwater, pagoda, overlay, addLotus: lotus,
     update(t, dt, look, amp, activeExp, camY) {
       for (const f of tick) f(t, dt, amp);
       frog.update(dt, t, look, amp);

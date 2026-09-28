@@ -85,6 +85,10 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
     // put the frog (x = -11.8) about two-thirds of the way across the frame
     banner.current = { x: -14.1 }; // between the sign (-16.8) and the frog (-11.8)
     pond.cloud.visible = false;
+    // extra lotus on the background water, left half of the banner (u = fraction across the image)
+    const cx = -14.1, place = (u: number, z: number) => cx + (u / 1.48 - 0.5) * 3.848 * (19 - z);
+    for (const [u, z, sc] of [[0.1, -8, 1.1], [0.3, -9, 0.9], [0.44, -6, 0.8], [0.2, -15, 1.2], [0.38, -17, 1.0], [0.08, -25, 1.3], [0.28, -27, 1.1], [0.16, -36, 1.4], [0.42, -34, 1.2]])
+      pond.addLotus(place(u, z), z, sc, false, 0.85);
     const bloom = composer.passes[1] as UnrealBloomPass; bloom.strength = 0.5; bloom.threshold = 0.5; // softer glow
   }, [camera, pond, size, composer]);
 
