@@ -69,14 +69,6 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
   const pond = useMemo(() => buildPond(tier, { w: size.width * gl.getPixelRatio(), h: size.height * gl.getPixelRatio() }), [tier]);
   const journey = useMemo(() => { const j = new Journey(pond.frog); j.onSplash = (x) => pond.underwater.splash(x); return j; }, [pond]);
   useEffect(() => { pond.cloud.visible = !tier.mobile; }, [pond, tier.mobile]); // phones use the floating button instead
-  useEffect(() => {
-    if (!new URLSearchParams(location.search).has("banner")) return;
-    document.documentElement.dataset.banner = "true";
-    // put the frog (x = -11.8) about two-thirds of the way across the frame
-    const c = camera as THREE.PerspectiveCamera, halfW = 19 * Math.tan(THREE.MathUtils.degToRad(c.fov / 2)) * c.aspect;
-    banner.current = { x: -11.8 - 0.64 * halfW };
-    pond.cloud.visible = false;
-  }, [camera, pond, size]);
 
   const composer = useMemo(() => {
     const c = new EffectComposer(gl);
@@ -85,6 +77,15 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
     c.addPass(new OutputPass());
     return c;
   }, [pond, gl, camera]);
+
+  useEffect(() => {
+    if (!new URLSearchParams(location.search).has("banner")) return;
+    document.documentElement.dataset.banner = "true";
+    // put the frog (x = -11.8) about two-thirds of the way across the frame
+    banner.current = { x: -14.1 }; // between the sign (-16.8) and the frog (-11.8)
+    pond.cloud.visible = false;
+    const bloom = composer.passes[1] as UnrealBloomPass; bloom.strength = 0.5; bloom.threshold = 0.5; // softer glow
+  }, [camera, pond, size, composer]);
 
   useEffect(() => {
     const c = camera as THREE.PerspectiveCamera;
@@ -163,8 +164,11 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
     if (!cam.current || amp === 0) cam.current = { pos: t.pos.clone(), look: t.look.clone() };
     else { const k = 1 - Math.exp(-Math.min(delta, 0.05) * 3.2); cam.current.pos.lerp(t.pos, k); cam.current.look.lerp(t.look, k); }
     camera.position.copy(cam.current.pos); camera.lookAt(cam.current.look);
-    if (banner.current) { // ?banner: LinkedIn background framing, frog and sign in the right third
-      const b = banner.current; camera.position.set(b.x, 4.3, 19); camera.lookAt(b.x, 2.6, 0);
+    if (banner.current) { // ?banner: LinkedIn background. Camera faces the frog and sign head-on;
+      // a lens shift (view offset) moves them into the right third without turning them sideways.
+      const c = camera as THREE.PerspectiveCamera, W = size.width, H = size.height, k = 2 * 0.74;
+      c.position.set(banner.current.x, 4.3, 19); c.lookAt(banner.current.x, 2.6, 0);
+      c.aspect = (W * k) / H; c.setViewOffset(W * k, H, 0, 0, W, H);
     }
 
     const activeExp = arrived ? STOPS[journey.reached].exp ?? null : null;

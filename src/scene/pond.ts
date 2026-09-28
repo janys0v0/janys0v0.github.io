@@ -73,7 +73,7 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
   const tick: ((t: number, dt: number, amp: number) => void)[] = [];
 
   // ── sky, stars, moon ──────────────────────────────────────────────────────
-  const sky = new THREE.Mesh(new THREE.PlaneGeometry(900, 260), new THREE.MeshBasicMaterial({ fog: false, map: canvasTex(4, 512, (x) => {
+  const sky = new THREE.Mesh(new THREE.PlaneGeometry(1800, 260), new THREE.MeshBasicMaterial({ fog: false, map: canvasTex(4, 512, (x) => {
     const g = x.createLinearGradient(0, 0, 0, 512); g.addColorStop(0, SKY.top); g.addColorStop(0.62, SKY.mid); g.addColorStop(0.93, SKY.hor); g.addColorStop(1, SKY.hor); x.fillStyle = g; x.fillRect(0, 0, 4, 512);
   }) }));
   sky.position.set(0, 110, -260); scene.add(sky);
