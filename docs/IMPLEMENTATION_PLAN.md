@@ -1,4 +1,4 @@
-# janys.ponder: Implementation Plan
+# janys-ponder: Implementation Plan
 
 **Target look:** `design/concept/renders/hero_v7.png` (desktop), `hero_v7_mobile.png` (phone), `hero_v7_dusk.png` (light theme).
 **Reference code:** `design/concept/world7.js` is a working three.js scene. We port it into React Three Fiber components; we don't redesign it.

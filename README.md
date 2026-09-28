@@ -1,4 +1,4 @@
-# janys.ponder
+# janys-ponder
 
 Janys (Jiayang) Li's portfolio: a neon frog hops across skill terraces, dives into a pond, swims past six experiences and lands on the seabed to chat.
 

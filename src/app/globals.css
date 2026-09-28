@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* janys.ponder design tokens (from the approved v7 concept: design/concept/renders/hero_v7.png) */
+/* janys-ponder design tokens (from the approved v7 concept: design/concept/renders/hero_v7.png) */
 @theme {
   --color-ink: #04050d;          /* silhouettes, page background */
   --color-night: #050818;        /* night sky top */

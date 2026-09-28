@@ -121,7 +121,7 @@ const p = new URLSearchParams(location.search), s = p.get('s') || 'hero';
 const ui = document.getElementById('ui');
 const add = (html) => ui.insertAdjacentHTML('beforeend', html);
 const at = (x, y, z, html, dx = 0, dy = 0) => { let [sx, sy] = window.__project(x, y, z); const zf = window.__uiz || 1; sx /= zf; sy /= zf; add(`<div class="anchor" style="left:${sx + dx}px;top:${sy + dy}px">${html}</div>`); };
-const nav = (active) => add(`<nav><div class="logo mono glow-g">janys.ponder</div><div class="links mono"><span>overview</span><span class="glow-c">☁ ask the frog</span><span class="pill">let's chat</span></div></nav>`);
+const nav = (active) => add(`<nav><div class="logo mono glow-g">janys-ponder</div><div class="links mono"><span>overview</span><span class="glow-c">☁ ask the frog</span><span class="pill">let's chat</span></div></nav>`);
 const mini = (t) => add(`<svg class="mini" viewBox="0 0 100 100"><path d="M14 18 H70 Q86 18 86 34 V66 Q86 82 70 82 H14" fill="none" stroke="#3a4170" stroke-width="3"/>
   <path d="M14 18 H70 Q86 18 86 34 V66 Q86 82 70 82 H14" fill="none" stroke="#39ff88" stroke-width="3" pathLength="100" stroke-dasharray="${t} 100" style="filter:drop-shadow(0 0 4px #39ff88)"/>
   <text x="50" y="54" text-anchor="middle" fill="#8c93b8" font-size="10" font-family="JetBrains Mono">${Math.round(t)}%</text></svg>`);

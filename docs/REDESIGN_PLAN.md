@@ -1,10 +1,10 @@
-# janys.ponder: Website Build Plan
+# janys-ponder: Website Build Plan
 
 > Content lives in [CONTENT_DRAFT.md](CONTENT_DRAFT.md). Visual theme: the concept deck and the renders in `design/concept/` (a three.js scene file that renders every concept image).
 
 ## 1. Concept
 
-A frog lives at **janys.ponder** (*pond* + *ponder*). Tagline: **"amphibian in the how you think & how I build."**
+A frog lives at **janys-ponder** (*pond* + *ponder*). Tagline: **"amphibian in the how you think & how I build."**
 
 The page is a single journey along an **inverted-C path (Ɔ)**, seen as a side-view cross-section of the world, like a cut-away diorama or ant farm:
 1. **Top arm (land, moving right):** the frog starts on land at the top-left (the surface hub). Scrolling makes it take a few **horizontal hops** across flat terraces, and the skill keywords pop up at each landing.
@@ -39,7 +39,7 @@ Removed: `/tetete`, the canvas cylinder, dead `/interests` and `/lamb` links. `/
           ☁ "Ask the frog" (always available)
 
    LAND ──────────────────────────────────────────▶ (top arm, horizontal)
-   🐸 janys.ponder   ▭ AI & ML   ▭ Product   ▭ Prog & Data   ╮
+   🐸 janys-ponder   ▭ AI & ML   ▭ Product   ▭ Prog & Data   ╮
    (surface hub)      hop →        hop →        hop →        │ dive!
    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ~~~~~~~~~~~~~
                                    (earth / cut-away)    │ 2026  🐙 BAM
@@ -72,7 +72,7 @@ Removed: `/tetete`, the canvas cylinder, dead `/interests` and `/lamb` links. `/
 A 2D animation that appears instantly: a tadpole grows into a frog as the 3D assets load, then hops into the scene. The HTML text is already underneath. Skipped on repeat visits and for reduced-motion preferences.
 
 ### 4.2 Surface hub (`#surface`): top-left, on land
-- **3D:** the frog sits on land at the far left of the top arm, beside a hand-painted **"janys.ponder" signpost** (the lily-pad lettering moves to the sign, since the hub is now on land). Grass and reeds are around it, the cloud is above, and the first terrace and a glimpse of water are visible to the right. The frog's eyes follow the cursor and it catches a fly when idle.
+- **3D:** the frog sits on land at the far left of the top arm, beside a hand-painted **"janys-ponder" signpost** (the lily-pad lettering moves to the sign, since the hub is now on land). Grass and reeds are around it, the cloud is above, and the first terrace and a glimpse of water are visible to the right. The frog's eyes follow the cursor and it catches a fly when idle.
 - **DOM:** name, tagline, a 2-line bio, "Open to relocation", LinkedIn / GitHub / email icons, and a "scroll to hop →" cue. The arrow points right because the first motion is horizontal.
 
 ### 4.3 Terraces (`#skills`): top arm, horizontal hops

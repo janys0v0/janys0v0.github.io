@@ -1,4 +1,4 @@
-# janys.ponder: Content Draft
+# janys-ponder: Content Draft
 
 **Primary source:** PM resume (Sep 2026, private copy).
 Also: ISF deck (`public/Indochina Starfish Foundation Portfolio.pdf`), Emotion Compass mockup (`public/emo_compass.png`).

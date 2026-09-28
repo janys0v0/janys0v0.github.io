@@ -28,7 +28,7 @@ export function LetsChat({ standalone = false }: { standalone?: boolean }) {
     f.set("reason", reason);
     if (!FORMSPREE_ID) {
       const body = `${message}\n\n— ${name} (${email})${f.get("org") ? `, ${f.get("org")}` : ""}`;
-      window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(`[janys.ponder] ${reason}`)}&body=${encodeURIComponent(body)}`;
+      window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(`[janys-ponder] ${reason}`)}&body=${encodeURIComponent(body)}`;
       setStatus("sent"); window.dispatchEvent(new Event("note-sent"));
       return;
     }

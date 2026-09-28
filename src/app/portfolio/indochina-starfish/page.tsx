@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 // Old URL from the previous site: forward to the new case study.
-export const metadata: Metadata = { title: "Moved · janys.ponder", robots: { index: false } };
+export const metadata: Metadata = { title: "Moved · janys-ponder", robots: { index: false } };
 
 export default function Moved() {
   return (

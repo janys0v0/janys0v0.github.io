@@ -1,4 +1,4 @@
-// janys.ponder — "Floors" concept: a realistic stairwell climbed by scroll, sunset through the windows,
+// janys-ponder — "Floors" concept: a realistic stairwell climbed by scroll, sunset through the windows,
 // rooftop reveal at the top. Refs: design/references/ref-floors-*.jpg. No neon: real materials + real light.
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';

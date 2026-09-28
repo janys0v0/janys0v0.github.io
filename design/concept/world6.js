@@ -1,4 +1,4 @@
-// janys.ponder — v2 "painterly cyber-pond" homepage.
+// janys-ponder — v2 "painterly cyber-pond" homepage.
 // Painterly, lit environment (textured pads, glowing lotus, reflective water, haze, city, pagoda)
 // + neon-outlined characters (the frog) and UI objects. Refs: design/references/*.webp
 import * as THREE from 'three';
@@ -369,7 +369,7 @@ const TERR_X = [-8, -2, 4];
   const post = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 3.4, 10), wood); post.position.set(-16.8, 1.7, -0.6); scene.add(post);
   const board = new THREE.Mesh(new RoundedBoxGeometry(5.6, 1.5, 0.3, 3, 0.1), new THREE.MeshStandardMaterial({ color: '#0e1a24', roughness: 0.6 })); board.position.set(-16.8, 3.3, -0.6); scene.add(board);
   const txt = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 1.1), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.8, toneMapped: false, depthWrite: false, map: canvasTex(1024, 256, (x) => {
-    x.font = '700 108px "JetBrains Mono", monospace'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.shadowColor = '#39ff88'; x.shadowBlur = 26; x.fillStyle = '#7dffb0'; x.fillText('janys.ponder', 512, 128); x.shadowBlur = 0; x.globalAlpha = 0.6; x.fillStyle = '#fff'; x.fillText('janys.ponder', 512, 128); }) }));
+    x.font = '700 108px "JetBrains Mono", monospace'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.shadowColor = '#39ff88'; x.shadowBlur = 26; x.fillStyle = '#7dffb0'; x.fillText('janys-ponder', 512, 128); x.shadowBlur = 0; x.globalAlpha = 0.6; x.fillStyle = '#fff'; x.fillText('janys-ponder', 512, 128); }) }));
   txt.position.set(-16.8, 3.3, -0.43); scene.add(txt); [post, board, txt].forEach(o => o.layers.set(1));
   line(scene, [[-19.55, 2.6, -0.44], [-19.55, 4.0, -0.44], [-14.05, 4.0, -0.44], [-14.05, 2.6, -0.44], [-19.55, 2.6, -0.44]], C.frog, 1.6, 0.9, 0.7).layers.set(1);
   // lantern by the sign

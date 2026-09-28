@@ -1,4 +1,4 @@
-// The janys.ponder homepage world, ported from design/concept/world7.js (the approved v7 look).
+// The janys-ponder homepage world, ported from design/concept/world7.js (the approved v7 look).
 // Draw-call budget: repeated objects are instanced or merged (pads, grass, rocks, reeds, city, pier, lotus petals).
 import * as THREE from "three";
 import { Reflector } from "three/addons/objects/Reflector.js";
@@ -351,7 +351,7 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
     const board = new THREE.Mesh(new RoundedBoxGeometry(5.6, 1.5, 0.3, 3, 0.1), new THREE.MeshStandardMaterial({ color: "#0e1a24", roughness: 0.6 })); board.position.set(-16.8, 3.3, -0.6);
     const txt = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 1.1), new THREE.MeshBasicMaterial({ transparent: true, opacity: 1, depthWrite: false, map: canvasTex(1024, 256, (x) => {
       x.font = '700 108px "JetBrains Mono", ui-monospace, monospace'; x.textAlign = "center"; x.textBaseline = "middle";
-      x.fillStyle = "#b8ffd4"; x.fillText("janys.ponder", 512, 128); // crisp, no halo
+      x.fillStyle = "#b8ffd4"; x.fillText("janys-ponder", 512, 128); // crisp, no halo
     }) }));
     txt.position.set(-16.8, 3.3, -0.43);
     const frame = line(scene, [[-19.55, 2.6, -0.44], [-19.55, 4, -0.44], [-14.05, 4, -0.44], [-14.05, 2.6, -0.44], [-19.55, 2.6, -0.44]], C.frog, { width: 1.6, k: 0.9, opacity: 0.7 });

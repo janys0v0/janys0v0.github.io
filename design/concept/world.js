@@ -1,4 +1,4 @@
-// janys.ponder concept renderer — neon-outline cyberpunk pond world (side-view cross-section, Ɔ path)
+// janys-ponder concept renderer — neon-outline cyberpunk pond world (side-view cross-section, Ɔ path)
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -332,7 +332,7 @@ function buildWorld() {
   // signpost
   blob(scene, new THREE.CylinderGeometry(0.14, 0.14, 3.2, 12), C.sand, { pos: [-18, 1.6, -0.6], t: 0.04 });
   blob(scene, new RoundedBoxGeometry(5.4, 1.5, 0.3, 3, 0.12), C.frog, { pos: [-18, 3.3, -0.6], t: 0.05, fill: 0.3 });
-  neonText('janys.ponder', '#7dffb0', { size: 1.1, pos: [-18, 3.3, -0.4] });
+  neonText('janys-ponder', '#7dffb0', { size: 1.1, pos: [-18, 3.3, -0.4] });
 
   // thought cloud
   const bumps = [[-2.4, -0.2, 1.1], [-1.1, 0.6, 1.25], [0.6, 0.85, 1.35], [2.1, 0.2, 1.1], [1.3, -0.7, 1.0], [-0.6, -0.7, 1.0]];

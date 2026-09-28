@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://janys0v0.github.io"),
   title: `${profile.fullName} · ${profile.handle}`,
   description,
-  openGraph: { title: `${profile.fullName} · ${profile.handle}`, description, url: "/", siteName: profile.handle, images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "A neon frog by a moonlit pond: janys.ponder" }], type: "website" },
+  openGraph: { title: `${profile.fullName} · ${profile.handle}`, description, url: "/", siteName: profile.handle, images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "A neon frog by a moonlit pond: janys-ponder" }], type: "website" },
   twitter: { card: "summary_large_image", title: profile.fullName, description, images: ["/og.jpg"] },
   icons: { icon: "/frog.png" },
 };

@@ -49,7 +49,7 @@ const s = new URLSearchParams(location.search).get('s') || 'lobby';
 const ui = document.getElementById('ui'), add = h => ui.insertAdjacentHTML('beforeend', h);
 const at = (x, y, z, h) => { const [a, b] = window.__project(x, y, z); add(`<div class="anchor" style="left:${a}px;top:${b}px">${h}</div>`); };
 const floors = (on) => add(`<div class="floors">${['L', '2', '3', '4', 'R'].map((f, i) => `<i class="${i === on ? 'on' : ''}">${f}</i>`).join('')}</div>`);
-const nav = () => add(`<nav><div class="logo mono">janys.ponder</div><div class="links"><span>overview</span><span>☁ ask the frog</span><span class="pill">let's chat</span></div></nav>`);
+const nav = () => add(`<nav><div class="logo mono">janys-ponder</div><div class="links"><span>overview</span><span>☁ ask the frog</span><span class="pill">let's chat</span></div></nav>`);
 window.addEventListener('world-ready', async () => {
   await document.fonts.ready;
   if (s === 'lobby') { nav(); floors(0);
