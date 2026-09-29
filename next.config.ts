@@ -8,8 +8,11 @@ const nextConfig: NextConfig = {
    */
   output: "export",
 
-  /** Production builds use their own cache folder, so `pnpm build` never breaks a running `pnpm dev`. */
-  distDir: process.env.NODE_ENV === "production" ? ".next-build" : ".next",
+  /**
+   * The dev server keeps its own cache folder, so `pnpm build` never breaks a running `pnpm dev`.
+   * (Production must keep the default: with a custom distDir, the static export would leave ./out.)
+   */
+  ...(process.env.NODE_ENV === "development" ? { distDir: ".next-dev" } : {}),
 
   /**
    * Set base path. This is the slug of your GitHub repository.

@@ -32,6 +32,28 @@ export const ANCHORS: Anchor[] = [
   }),
 ];
 
+const ANIMAL_EMOJI = { octopus: "🐙", turtle: "🐢", flyingFish: "🐟", starfish: "⭐", crab: "🦀", jellyfish: "🪼" } as const;
+
+/** A small framed "window" at the top of each card: title bar + photo (or the client animal until a photo is added). */
+function PhotoWindow({ e, mobile }: { e: (typeof experience)[number]; mobile: boolean }) {
+  return (
+    <figure className="-mx-1 mb-3 overflow-hidden rounded-xl border border-[#2c6bff99] bg-[#030612]">
+      <div className="flex items-center gap-1.5 border-b border-[#1e2a55] px-2.5 py-1.5" aria-hidden>
+        <i className="h-2 w-2 rounded-full bg-lotus/80" /><i className="h-2 w-2 rounded-full bg-[#f4ff61]/80" /><i className="h-2 w-2 rounded-full bg-frog/80" />
+        <span className="ml-1.5 truncate font-mono text-[10px] text-muted">{e.id}.{e.photo ? "jpg" : "pond"}</span>
+      </div>
+      {e.photo ? (
+        <img src={e.photo.src} alt={e.photo.alt} loading="lazy" className={`block w-full object-cover ${mobile ? "h-[110px]" : "aspect-[16/9]"}`} />
+      ) : (
+        <div role="img" aria-label={`${e.org} illustration`}
+          className={`grid place-items-center bg-[radial-gradient(circle_at_50%_60%,#12306a,#050b1c_70%)] ${mobile ? "h-[110px]" : "aspect-[16/9]"}`}>
+          <span className="text-[44px] sm:text-[56px] drop-shadow-[0_0_18px_rgba(41,211,255,0.6)]" aria-hidden>{ANIMAL_EMOJI[e.animal]}</span>
+        </div>
+      )}
+    </figure>
+  );
+}
+
 /** Elements registered by id; PondCanvas writes their transforms each frame. */
 export const anchorEls = new Map<string, HTMLElement>();
 const reg = (id: string) => (el: HTMLElement | null) => { if (el) anchorEls.set(id, el); else anchorEls.delete(id); };
@@ -68,7 +90,8 @@ export function SceneOverlay({ mobile }: { mobile: boolean }) {
       {experience.map((e) => (
         <div key={e.id}>
           <article ref={reg(`card-${e.id}`)} data-on="false" style={mobile ? undefined : offscreen} aria-label={`${e.org}, ${e.role}`}
-            className={`${mobile ? "fixed inset-x-3 bottom-[76px] max-h-[34svh] overflow-y-auto" : `${base} w-[380px]`} pointer-events-auto rounded-2xl border border-[#2c6bff88] bg-[linear-gradient(160deg,#0b1a36f2,#050b1cf2)] p-5 sm:p-6 shadow-[0_0_30px_rgba(41,120,255,0.25)] transition-opacity duration-500 data-[on=false]:pointer-events-none data-[on=false]:opacity-0`}>
+            className={`${mobile ? "fixed inset-x-3 bottom-[76px] max-h-[46svh] overflow-y-auto" : `${base} w-[360px]`} pointer-events-auto rounded-2xl border border-[#2c6bff88] bg-[linear-gradient(160deg,#0b1a36f2,#050b1cf2)] p-4 sm:p-5 shadow-[0_0_30px_rgba(41,120,255,0.25)] transition-opacity duration-500 data-[on=false]:pointer-events-none data-[on=false]:opacity-0`}>
+            <PhotoWindow e={e} mobile={mobile} />
             <p className="font-mono text-[12px] tracking-[0.14em] text-tech uppercase">{e.dates} · {e.location}</p>
             <h3 className="mt-1.5 text-[20px] sm:text-[24px] font-bold leading-tight">{e.org}</h3>
             <p className="text-[14px] text-muted">{e.role}</p>

@@ -11,6 +11,8 @@ export type Experience = {
   result: string; // the simple solution (frog's "ta-da" bubble)
   summary: string; // one short sentence on the card
   link?: { label: string; href: string };
+  /** Photo for the card's window. Drop a file in public/work/ and point to it here. */
+  photo?: { src: string; alt: string };
 };
 
 // Kept short and public-safe on purpose: no internal metrics, client names or confidential details.
@@ -61,6 +63,7 @@ export const experience: Experience[] = [
     result: "One simple system, with progress visible in real time.",
     summary: "Led a volunteer team to build a data product for an education nonprofit.",
     link: { label: "Read the case study", href: "/work/isf" },
+    photo: { src: "/work/isf-product.jpg", alt: "Students at ISF Cambodia next to the data product's sign-in screen" },
   },
   {
     id: "ekimetrics",
@@ -84,5 +87,6 @@ export const experience: Experience[] = [
     result: "A tap-to-rate app that captures emotions as they move.",
     summary: "Designed a research app and study on how emotions shift.",
     link: { label: "Try the Emotion Compass", href: "/work/acme" },
+    photo: { src: "/work/emotion-compass.jpg", alt: "Three phone screens of the Emotion Compass app" },
   },
 ];
