@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "janys-ponder",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev", "--port", "3002"],
+      "port": 3002
+    }
+  ]
+}
