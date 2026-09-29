@@ -82,7 +82,7 @@ export function SceneOverlay({ mobile }: { mobile: boolean }) {
           </article>
           <p ref={reg(`prob-${e.id}`)} data-on="false" style={offscreen}
             className={`${base} w-[180px] sm:w-[260px] -translate-y-full rounded-2xl border-[1.6px] border-[#4d8dff] bg-[#06081a]/90 px-3.5 py-2.5 text-[12px] sm:text-[14px] leading-snug shadow-[0_0_16px_rgba(77,141,255,0.45)]`}>
-            <span className="mb-1 block font-mono text-[10px] tracking-[0.2em] text-[#8fb6ff]">THE CLIENT</span>
+            <span className="mb-1 block font-mono text-[10px] tracking-[0.2em] text-[#8fb6ff]">THE ASK</span>
             {e.problem}
           </p>
           <p ref={reg(`res-${e.id}`)} data-on="false" style={offscreen}

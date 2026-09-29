@@ -47,13 +47,11 @@ export default function Overview() {
                 <p className="font-mono text-[13px] tracking-[0.14em] text-tech uppercase">{e.dates} · {e.location}</p>
                 <h3 className="mt-2 text-[22px] font-bold">{e.org}</h3>
                 <p className="text-muted">{e.role}</p>
-                <p className="mt-3 text-[16px]"><span className="text-frog">Result:</span> {e.result}</p>
-                <ul className="mt-3 list-disc space-y-1.5 pl-5 text-[15px] leading-relaxed">
-                  {e.bullets.map((b) => <li key={b}>{b}</li>)}
-                </ul>
-                <ul className="mt-3 flex flex-wrap gap-1.5">
-                  {e.tags.map((t) => <li key={t} className="rounded-full border border-[#3d7bff] px-2.5 py-0.5 font-mono text-[12px] text-[#9dc0ff]">{t}</li>)}
-                </ul>
+                <p className="mt-3 text-[16px]">{e.summary}</p>
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                  <p className="rounded-xl border border-[#4d8dff99] px-3 py-2 text-[14px]"><span className="block font-mono text-[10px] tracking-[0.2em] text-[#8fb6ff]">THE ASK</span>{e.problem}</p>
+                  <p className="rounded-xl border border-frog/60 px-3 py-2 text-[14px]"><span className="block font-mono text-[10px] tracking-[0.2em] text-frog">THE ANSWER</span>{e.result}</p>
+                </div>
                 {e.link && (
                   <a href={e.link.href} className="mt-4 inline-block font-mono text-[14px] text-frog" {...(e.link.href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})}>
                     {e.link.label} →

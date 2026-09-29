@@ -7,118 +7,82 @@ export type Experience = {
   dates: string;
   location: string;
   animal: ClientAnimal;
-  problem: string; // the client animal's bubble
-  result: string; // the frog's "ta-da" bubble
-  summary: string; // one sentence on the card
-  /** full resume bullets: shown on /overview only */
-  bullets: string[];
-  tags: string[];
+  problem: string; // the client's question (left bubble)
+  result: string; // the simple solution (frog's "ta-da" bubble)
+  summary: string; // one short sentence on the card
   link?: { label: string; href: string };
 };
 
+// Kept short and public-safe on purpose: no internal metrics, client names or confidential details.
 // Dive order: newest at the surface, oldest at the bottom.
 export const experience: Experience[] = [
   {
     id: "bam",
     org: "Balyasny Asset Management",
     role: "Summer Associate, Data Scientist",
-    dates: "Jun – Aug 2026",
+    dates: "Summer 2026",
     location: "New York City",
     animal: "octopus",
     problem: "Can we trust our forecasts, faster?",
     result: "AI agents that test and explain models in minutes.",
     summary: "Built AI forecasting tools and agents for an investment firm.",
-    bullets: [
-      "Built AI forecasting tools and agents for an investment firm.",
-      "Built AI agents that test and explain models.",
-      "Presented the work to technical and non-technical partners.",
-    ],
-    tags: ["Agentic AI", "Forecasting", "Model Evaluation", "Stakeholders"],
     link: { label: "Watch on LinkedIn", href: "https://www.linkedin.com/feed/update/urn:li:ugcPost:7490130801372794880/" },
   },
   {
     id: "harvard-grid",
     org: "Harvard Grid",
     role: "Applied AI Incubator Facilitator",
-    dates: "Sep 2025 – Present",
+    dates: "2025 – Present",
     location: "Boston",
     animal: "turtle",
-    problem: "10 student teams have AI ideas. How do they become startups?",
-    result: "A 0→1 incubator: 10 teams, 20 mentors, and a Demo Day with 100+ attendees.",
-    summary: "Designed and ran a three-month applied-AI incubator that took 10 student startup teams from idea to Demo Day.",
-    bullets: [
-      "Built and ran a 3-month applied-AI incubator for 10 student startup teams; designed the curriculum and led 10 sessions",
-      "Recruited 20 technical and industry mentors; hosted a 100+ attendee Demo Day with 30+ investors and mentors",
-    ],
-    tags: ["0→1", "Program Design", "Go-to-Market", "Facilitation"],
+    problem: "How do student AI ideas become real startups?",
+    result: "A hands-on incubator, from first idea to Demo Day.",
+    summary: "Designed and ran an applied-AI incubator for student founders.",
   },
   {
     id: "cathay",
     org: "Cathay Pacific",
     role: "Data Science Intern",
-    dates: "Jul – Aug 2025",
+    dates: "Summer 2025",
     location: "Hong Kong",
     animal: "flyingFish",
-    problem: "Members give up before their discount even activates.",
-    result: "Discount activation 90s → 25s, and analytics 3.5 hrs → 10 min.",
-    summary: "Turned customer and staff pain points into a self-service Chrome extension and an AI workflow that automates e-commerce analytics.",
-    bullets: [
-      "Researched shopping-journey pain points, pitched requirements to 10 stakeholders across 3 departments, and built a self-service Chrome extension (72% faster activation)",
-      "Built a multi-modal AI agent workflow (OpenAI, Zapier) that turns product listings into structured insights (95% faster)",
-      "Researched pain points across 10+ departments; presented at 3 workshops to 200+ attendees",
-    ],
-    tags: ["Customer Research", "Chrome Extension", "Agentic AI", "Workshops"],
+    problem: "How can shopping with us feel effortless?",
+    result: "A one-click browser helper and an AI analytics assistant.",
+    summary: "Turned customer pain points into self-serve tools and AI automation.",
   },
   {
     id: "isf",
     org: "Develop for Good × ISF Cambodia",
     role: "Product Manager",
-    dates: "May – Aug 2025",
-    location: "Remote · Hong Kong",
+    dates: "Summer 2025",
+    location: "Remote",
     animal: "starfish",
-    problem: "Scattered data causes inconsistencies, delays, and errors. (ISF team)",
-    result: "2-week reporting turned into real-time monitoring for 100+ staff supporting 4,000+ children.",
-    summary: "Led an 11-person team to launch a data product that gives a Cambodian education NGO real-time monitoring of its programs.",
-    bullets: [
-      "Led an 11-member cross-functional team to launch a 0→1 data management product for attendance and program outcomes",
-      "Interviewed 10+ stakeholders across 4 user groups → requirements, roadmap and PRD; shipped with design and engineering using Agile",
-      "Ran 10 usability tests → 20+ UX improvements → 2× task-completion confidence",
-    ],
-    tags: ["0→1", "User Research", "PRD", "Usability Testing"],
-    link: { label: "See how we found the 3 biggest usability problems", href: "/work/isf" },
+    problem: "Our data lives everywhere. How do we see the big picture?",
+    result: "One simple system, with progress visible in real time.",
+    summary: "Led a volunteer team to build a data product for an education nonprofit.",
+    link: { label: "Read the case study", href: "/work/isf" },
   },
   {
     id: "ekimetrics",
     org: "Ekimetrics",
     role: "Data Science Consultant Intern",
-    dates: "Jun – Dec 2024",
+    dates: "2024",
     location: "Hong Kong",
     animal: "crab",
-    problem: "Analysts spend 20 minutes digging numbers out of every report.",
-    result: "A document-extraction platform: 20 → 7 minutes per document, with 210% more throughput.",
-    summary: "Engineered an LLM document-extraction platform that pulls key numbers out of long reports in 7 minutes instead of 20.",
-    bullets: [
-      "Engineered a retrieval + LLM document-extraction platform (Azure, LangChain, ChromaDB): 65% less manual effort; 210% throughput via Spark/Databricks",
-      "Presented marketing investment recommendations to 10 Fortune 500 client leaders, backed by 10+ Bayesian regressions",
-    ],
-    tags: ["RAG", "LangChain", "Spark", "Bayesian Modeling"],
+    problem: "Can we stop digging through reports by hand?",
+    result: "An AI reader that pulls out the numbers that matter.",
+    summary: "Built an AI document reader and data-driven insights for clients.",
   },
   {
     id: "acme",
     org: "ACME Lab @ UCLA Psychology",
     role: "Research Assistant",
-    dates: "Mar 2022 – Sep 2024",
+    dates: "2022 – 2024",
     location: "Los Angeles",
     animal: "jellyfish",
-    problem: "How do emotions shift from moment to moment, and how do we capture that?",
-    result: "Designed the Emotion Compass app; usability fixes raised user confidence 24%.",
-    // Methods only until the lab confirms the findings can be public.
-    summary: "Designed the Emotion Compass app and a 300-person study that captures how emotions shift from moment to moment.",
-    bullets: [
-      "Designed and programmed a 300-person experiment recording emotional fluctuations for cognitive analytics research",
-      "Designed a mobile app (Emotion Compass) and ran usability tests with 10+ users → 20+ improvements → +24% user confidence",
-    ],
-    tags: ["Experiment Design", "Usability Testing", "Mobile App", "Cognitive Science"],
-    link: { label: "Try the Emotion Compass yourself", href: "/work/acme" },
+    problem: "How do feelings change, moment to moment?",
+    result: "A tap-to-rate app that captures emotions as they move.",
+    summary: "Designed a research app and study on how emotions shift.",
+    link: { label: "Try the Emotion Compass", href: "/work/acme" },
   },
 ];
