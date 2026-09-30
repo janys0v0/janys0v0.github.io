@@ -2,7 +2,7 @@ export const profile = {
   name: "Janys",
   fullName: "Janys (Jiayang) Li",
   handle: "janys-ponder",
-  tagline: { lead: "amphibian in the", think: "how you think", build: "how I build" },
+  tagline: { lead: "amphibian in", think: "decoding people", build: "building magic" },
   role: "Data scientist · Product builder · M.S. Data Science @ Harvard",
   bio: "Data scientist and product builder. M.S. Data Science at Harvard (cross-registered at MIT); B.S. Statistics & Data Science + Cognitive Science at UCLA, Magna Cum Laude.",
   status: "Open to relocation",

@@ -17,7 +17,7 @@ export type Tier = { low: boolean; mobile: boolean; theme: "night" | "dusk" };
 import { SURF } from "./stops";
 export { SURF };
 export const TERR_X = [-8, -2, 4] as const;
-export const ANCHORS = { cloud: [0.2, 10.4, -3] as P3, frog: [-11.8, 0, 0.3] as P3 };
+export const ANCHORS = { frog: [-11.8, 0, 0.3] as P3 };
 
 const SKIES = {
   night: { top: "#050818", mid: "#141c44", hor: "#5a6aa8", fog: "#262d5a" },
@@ -55,9 +55,6 @@ export type Pond = {
   frog: Frog;
   /** Glow that travels with the frog: halo behind it, light pool on the ground, green point light. */
   frogFx: { halo: THREE.Object3D; pool: THREE.Object3D; light: THREE.Object3D };
-  /** The "ask the frog" thought cloud; the page moves it so it always sits right of the name. */
-  cloud: THREE.Group;
-  cloudBase: { x: number; y: number };
   underwater: Underwater;
   pagoda: THREE.Group;
   /** Rendered after the bloom pass: crisp elements that must not glow (the sign lettering). */
@@ -386,23 +383,6 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
     });
   }
 
-  // ── thought cloud ("ask the frog"): a slow bob ───────────────────────────
-  const cg = new THREE.Group(); const cloudBase = { x: ANCHORS.cloud[0], y: ANCHORS.cloud[1] };
-  {
-    const bumps = [[-2.4, -0.2, 1.1], [-1.1, 0.6, 1.25], [0.6, 0.85, 1.35], [2.1, 0.2, 1.1], [1.3, -0.7, 1], [-0.6, -0.7, 1]];
-    const cloud: P3[] = [];
-    for (let i = 0; i <= 180; i++) {
-      const a = (i / 180) * Math.PI * 2, dx = Math.cos(a), dy = Math.sin(a); let best = 0;
-      for (const [bx, by, r] of bumps) { const b = bx * dx + by * dy, c = bx * bx + by * by - r * r, disc = b * b - c; if (disc >= 0) best = Math.max(best, b + Math.sqrt(disc)); }
-      cloud.push([dx * best, dy * best * 0.8, 0]);
-    }
-    cg.position.set(...ANCHORS.cloud); scene.add(cg);
-    const cf = new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(cloud.map((p) => new THREE.Vector2(p[0], p[1])))), new THREE.MeshBasicMaterial({ color: "#0a1030", transparent: true, opacity: 0.75, fog: false }));
-    cf.position.z = -0.05; cg.add(cf);
-    line(cg, cloud, "#5a8bff", { width: 2.4, k: 1.2, opacity: 0.9 });
-    tick.push((t, _dt, amp) => { cg.position.x = cloudBase.x; cg.position.y = cloudBase.y + amp * 0.12 * Math.sin(t * 0.6); });
-  }
-
   // ── the frog (kept out of the reflection so its bright double doesn't compete) ──
   const frog = new Frog();
   frog.root.position.set(...ANCHORS.frog); frog.root.scale.setScalar(1.22); scene.add(frog.root);
@@ -430,7 +410,7 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
 
   const bloom = tier.mobile ? { strength: 0.45, radius: 0.5, threshold: 0.42 } : { strength: 0.78, radius: 0.5, threshold: 0.42 };
   return {
-    scene, frog, reflector, bloom, frogFx: { halo, pool, light: fl }, cloud: cg, cloudBase, underwater, pagoda, overlay, addLotus: lotus,
+    scene, frog, reflector, bloom, frogFx: { halo, pool, light: fl }, underwater, pagoda, overlay, addLotus: lotus,
     update(t, dt, look, amp, activeExp, camY) {
       for (const f of tick) f(t, dt, amp);
       frog.update(dt, t, look, amp);

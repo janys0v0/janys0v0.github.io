@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 // HTML that lives "in" the 3D world: labels, keyword chips, experience cards and speech bubbles.
 // Each element is anchored to a 3D point; PondCanvas re-projects the anchors every frame and toggles data-on.
 import { experience } from "@/content/experience";
@@ -21,7 +22,6 @@ const TERRACE_X = [-8, -2, 4];
 export const ANCHORS: Anchor[] = [
   ...terraces.map((t, i): Anchor => ({ id: `t-${t.id}`, pos: [TERRACE_X[i], -0.3, 1.9], show: { when: "always" }, zone: "land" })),
   ...terraces.map((t, i): Anchor => ({ id: `c-${t.id}`, pos: [TERRACE_X[i], 7.4, -0.5], show: { when: "current", stop: i + 1 }, zone: "land" })),
-  { id: "cloud", pos: [0.2, 10.4, -3], show: { when: "always" }, mobile: false, zone: "land" },
   ...experience.flatMap((e, i): Anchor[] => {
     const y = EXP_DEPTHS[i], stop = stopIndex(e.id);
     return [
@@ -34,22 +34,39 @@ export const ANCHORS: Anchor[] = [
 
 const ANIMAL_EMOJI = { octopus: "🐙", turtle: "🐢", flyingFish: "🐟", starfish: "⭐", crab: "🦀", jellyfish: "🪼" } as const;
 
-/** A small framed "window" at the top of each card: title bar + photo (or the client animal until a photo is added). */
+/** A small framed "window" at the top of each card: title bar + photo(s), or the client animal until photos are added.
+ *  Several photos crossfade slowly; reduced-motion shows the first one only. */
 function PhotoWindow({ e, mobile }: { e: (typeof experience)[number]; mobile: boolean }) {
+  const photos = e.photos ?? [];
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (photos.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const t = window.setInterval(() => setI((n) => (n + 1) % photos.length), 4200);
+    return () => window.clearInterval(t);
+  }, [photos.length]);
+  const frame = mobile ? "h-[110px]" : "aspect-[16/9]";
+  const name = photos.length ? photos[i].src.split("/").pop() : `${e.id}.pond`;
   return (
     <figure className="-mx-1 mb-3 overflow-hidden rounded-xl border border-[#2c6bff99] bg-[#030612]">
       <div className="flex items-center gap-1.5 border-b border-[#1e2a55] px-2.5 py-1.5" aria-hidden>
         <i className="h-2 w-2 rounded-full bg-lotus/80" /><i className="h-2 w-2 rounded-full bg-[#f4ff61]/80" /><i className="h-2 w-2 rounded-full bg-frog/80" />
-        <span className="ml-1.5 truncate font-mono text-[10px] text-muted">{e.id}.{e.photo ? "jpg" : "pond"}</span>
+        <span className="ml-1.5 truncate font-mono text-[10px] text-muted">{name}</span>
+        {photos.length > 1 && <span className="ml-auto font-mono text-[10px] text-muted">{i + 1}/{photos.length}</span>}
       </div>
-      {e.photo ? (
-        <img src={e.photo.src} alt={e.photo.alt} loading="lazy" className={`block w-full object-cover ${mobile ? "h-[110px]" : "aspect-[16/9]"}`} />
-      ) : (
-        <div role="img" aria-label={`${e.org} illustration`}
-          className={`grid place-items-center bg-[radial-gradient(circle_at_50%_60%,#12306a,#050b1c_70%)] ${mobile ? "h-[110px]" : "aspect-[16/9]"}`}>
-          <span className="text-[44px] sm:text-[56px] drop-shadow-[0_0_18px_rgba(41,211,255,0.6)]" aria-hidden>{ANIMAL_EMOJI[e.animal]}</span>
-        </div>
-      )}
+      <div className={`relative ${frame}`}>
+        {photos.length ? photos.map((p, k) => (
+          <img key={p.src} src={p.src} alt={k === i ? p.alt : ""} aria-hidden={k !== i} loading="lazy"
+            style={{ objectPosition: p.focus ?? "50% 50%" }}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${k === i ? "opacity-100" : "opacity-0"}`} />
+        )) : (
+          <div role="img" aria-label={`${e.org} illustration`} className="grid h-full place-items-center bg-[radial-gradient(circle_at_50%_60%,#12306a,#050b1c_70%)]">
+            <span className="text-[44px] sm:text-[56px] drop-shadow-[0_0_18px_rgba(41,211,255,0.6)]" aria-hidden>{ANIMAL_EMOJI[e.animal]}</span>
+          </div>
+        )}
+        {e.badge && (
+          <img src={e.badge.src} alt={e.badge.alt} className="absolute bottom-2 right-2 h-9 w-9 rounded-lg border border-white/20 bg-black/80 p-1 object-contain sm:h-10 sm:w-10" />
+        )}
+      </div>
     </figure>
   );
 }
@@ -81,12 +98,6 @@ export function SceneOverlay({ mobile }: { mobile: boolean }) {
           ))}
         </div>
       ))}
-      {!mobile && (
-        <button ref={reg("cloud")} style={offscreen} data-on="true" onClick={() => window.dispatchEvent(new Event("ask-frog"))}
-          className={`${base} pointer-events-auto whitespace-nowrap rounded-full px-3 py-2 font-mono text-[14px] tracking-[0.12em] text-tech hover:text-white`}>
-          ask the frog
-        </button>
-      )}
       {experience.map((e) => (
         <div key={e.id}>
           <article ref={reg(`card-${e.id}`)} data-on="false" style={mobile ? undefined : offscreen} aria-label={`${e.org}, ${e.role}`}
@@ -133,8 +144,8 @@ export function DepthGauge({ mobile }: { mobile: boolean }) {
         {experience.map((e) => (
           <li key={e.id}>
             <button ref={reg(`g-${e.id}`)} onClick={() => go(e.id)} data-on="false"
-              className="group flex items-center justify-end gap-2 font-mono text-[11px] sm:text-[12px] text-muted data-[on=true]:text-white" aria-label={`${e.org}, ${e.dates}`}>
-              {!mobile && <span className="hidden group-hover:inline group-data-[on=true]:inline">{e.org.split(" ")[0]} ·</span>}
+              className="group flex w-full items-center justify-end gap-2 font-mono text-[11px] sm:text-[12px] text-muted data-[on=true]:text-white" aria-label={`${e.org}, ${e.dates}`}>
+              {!mobile && <span>{e.org.split(" ")[0]} ·</span>}
               {!mobile && <span>{e.dates.match(/\d{4}/)?.[0]}</span>}
               <i className="block h-[10px] w-[10px] rounded-full border-[1.5px] border-[#6f78a8] bg-ink group-data-[on=true]:border-frog group-data-[on=true]:bg-frog group-data-[on=true]:shadow-[0_0_10px_#39ff88]" />
             </button>

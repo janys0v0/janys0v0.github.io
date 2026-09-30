@@ -8,7 +8,7 @@
   --color-text: #e8ecff;         /* body text on dark: ≥ 11:1 on the sky */
   --color-muted: #cdd3f2;        /* secondary text: ≥ 4.5:1 */
   --color-frog: #39ff88;         /* you + primary actions */
-  --color-lotus: #ff6ad5;        /* "how you think" */
+  --color-lotus: #ff6ad5;        /* "decoding people" */
   --color-tech: #29d3ff;         /* "how I build", tech details */
   --color-terrace: #8b5cff;      /* skill terraces */
   --font-sans: var(--font-grotesk), system-ui, sans-serif;

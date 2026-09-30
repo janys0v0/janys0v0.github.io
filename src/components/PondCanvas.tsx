@@ -12,7 +12,7 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { Journey } from "@/scene/journey";
 import { motion, setLineResolution } from "@/scene/materials";
-import { ANCHORS as SCENE_ANCHORS, buildPond, type Tier } from "@/scene/pond";
+import { buildPond, type Tier } from "@/scene/pond";
 import { CARD_X, SEABED_Y, STOPS, SURF, type P3 } from "@/scene/stops";
 import { anchorEls, ANCHORS, DepthGauge, SceneOverlay } from "./SceneOverlay";
 
@@ -68,7 +68,6 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
 
   const pond = useMemo(() => buildPond(tier, { w: size.width * gl.getPixelRatio(), h: size.height * gl.getPixelRatio() }), [tier]);
   const journey = useMemo(() => { const j = new Journey(pond.frog); j.onSplash = (x) => pond.underwater.splash(x); return j; }, [pond]);
-  useEffect(() => { pond.cloud.visible = !tier.mobile; }, [pond, tier.mobile]); // phones use the floating button instead
 
   const composer = useMemo(() => {
     const c = new EffectComposer(gl);
@@ -84,7 +83,6 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
     document.documentElement.dataset.banner = "true";
     // put the frog (x = -11.8) about two-thirds of the way across the frame
     banner.current = { x: -14.1 }; // between the sign (-16.8) and the frog (-11.8)
-    pond.cloud.visible = false;
     // extra lotus on the background water, left half of the banner (u = fraction across the image)
     const cx = -14.1, place = (u: number, z: number) => cx + (u / 1.48 - 0.5) * 3.848 * (19 - z);
     for (const [u, z, sc] of [[0.1, -8, 1.1], [0.3, -9, 0.9], [0.44, -6, 0.8], [0.2, -15, 1.2], [0.38, -17, 1.0], [0.08, -25, 1.3], [0.28, -27, 1.1], [0.16, -36, 1.4], [0.42, -34, 1.2]])
@@ -102,18 +100,6 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
     if (tier.low) (composer.passes[1] as UnrealBloomPass).resolution.set(size.width / 2, size.height / 2);
     setLineResolution(size.width, size.height);
   }, [composer, gl, size, tier.low]);
-
-  // keep the thought cloud just right of the name, whatever the window's shape
-  useEffect(() => {
-    if (tier.mobile) return;
-    const name = document.querySelector("[data-hero-name]");
-    if (!name) return;
-    const c = camera as THREE.PerspectiveCamera, depth = land.pos[2] - SCENE_ANCHORS.cloud[2];
-    const halfW = depth * Math.tan(THREE.MathUtils.degToRad(c.fov / 2)) * (size.width / size.height);
-    const ndc = (name.getBoundingClientRect().right / size.width) * 2 - 1;
-    pond.cloudBase.x = Math.max(SCENE_ANCHORS.cloud[0], land.pos[0] + ndc * halfW + 3.4);
-    const a = ANCHORS.find((x) => x.id === "cloud"); if (a) a.pos = [pond.cloudBase.x, SCENE_ANCHORS.cloud[1], SCENE_ANCHORS.cloud[2]];
-  }, [pond, camera, land, size, tier.mobile]);
 
   // scroll → which stop the frog should be at (native scrolling is untouched); ?shot=N snaps for visual tests
   useEffect(() => {
