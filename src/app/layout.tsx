@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   openGraph: { title: `${profile.fullName} · ${profile.handle}`, description, url: "/", siteName: profile.handle, images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "A neon frog by a moonlit pond: janys-ponder" }], type: "website" },
   twitter: { card: "summary_large_image", title: profile.fullName, description, images: ["/og.jpg"] },
   icons: { icon: "/frog.png" },
+  verification: { google: "QHuha31FTSKFF1EsVLpS90eSYi0OkfY4fPvfqqimsIo" }, // Google Search Console
 };
 export const viewport = { themeColor: "#04050d" };
 
