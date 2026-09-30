@@ -23,6 +23,7 @@ export function HeroOverlay() {
         <a className="rounded-lg border border-[#39406e] bg-[#070a1a]/80 px-3 py-2" href={links.github} target="_blank" rel="noreferrer">⌥ GitHub</a>
         <a className="rounded-lg border border-[#39406e] bg-[#070a1a]/80 px-3 py-2" href={`mailto:${email}`}>✉ {email}</a>
       </div>
+      <p className="mt-5 hidden sm:block font-mono text-[12px] tracking-[0.08em] text-muted">psst: tap the grass or a block, and the frog hops over</p>
     </section>
   );
 }

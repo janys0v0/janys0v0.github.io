@@ -57,6 +57,8 @@ export type Pond = {
   frogFx: { halo: THREE.Object3D; pool: THREE.Object3D; light: THREE.Object3D };
   underwater: Underwater;
   pagoda: THREE.Group;
+  /** The three skill terraces, left → right (click targets). */
+  terraces: THREE.Group[];
   /** Rendered after the bloom pass: crisp elements that must not glow (the sign lettering). */
   overlay: THREE.Scene;
   /** Add a lotus (used by banner mode to decorate the frame). */
@@ -312,6 +314,7 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
   koi(-1.5, 10.5, 4, 1.6, 0.12, "#ff9a4a"); koi(10, 15, 3.5, 1.4, -0.09, C.pink);
 
   // ── the land strip (top arm of the Ɔ) ────────────────────────────────────
+  const terraces: THREE.Group[] = [];
   {
     const stoneTex = canvasTex(1024, 128, (x, w, h) => {
       x.fillStyle = "#26304a"; x.fillRect(0, 0, w, h);
@@ -343,7 +346,10 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
     for (let i = 0; i < 12; i++) { const x = R(-24, 7); if (TERR_X.some((t) => Math.abs(x - t) < 2.5)) continue; reeds.push(...toSegs(curve([[x, 0, 2.2], [x + 0.1, 0.7, 2.2], [x + R(-0.3, 0.3), 1.4, 2.2]], 8))); }
     segments(scene, reeds, withLineMotion(lineMat(C.frog, { width: 1.2, k: 0.5, opacity: 0.3 }), "wind", 0)).frustumCulled = false;
     // terraces
-    TERR_X.forEach((x) => { for (let k = 0; k < 3; k++) blob(scene, new RoundedBoxGeometry(4.4 - k * 0.5, 0.48, 3 - k * 0.3, 4, 0.2), [C.purple, C.violet, "#a78bff"][k], { pos: [x, 0.25 + k * 0.5, -0.5], t: 0.05, fill: 0.5, k: 2 }); });
+    TERR_X.forEach((x) => {
+      const g = new THREE.Group(); scene.add(g); terraces.push(g);
+      for (let k = 0; k < 3; k++) blob(g, new RoundedBoxGeometry(4.4 - k * 0.5, 0.48, 3 - k * 0.3, 4, 0.2), [C.purple, C.violet, "#a78bff"][k], { pos: [x, 0.25 + k * 0.5, -0.5], t: 0.05, fill: 0.5, k: 2 });
+    });
     // signpost (kept out of the water reflection: layer 1)
     const wood = new THREE.MeshStandardMaterial({ color: "#5a3d2a", roughness: 0.8 });
     const post = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 3.4, 10), wood); post.position.set(-16.8, 1.7, -0.6);
@@ -410,7 +416,7 @@ export function buildPond(tier: Tier, size: { w: number; h: number }): Pond {
 
   const bloom = tier.mobile ? { strength: 0.45, radius: 0.5, threshold: 0.42 } : { strength: 0.78, radius: 0.5, threshold: 0.42 };
   return {
-    scene, frog, reflector, bloom, frogFx: { halo, pool, light: fl }, underwater, pagoda, overlay, addLotus: lotus,
+    scene, frog, reflector, bloom, frogFx: { halo, pool, light: fl }, underwater, pagoda, terraces, overlay, addLotus: lotus,
     update(t, dt, look, amp, activeExp, camY) {
       for (const f of tick) f(t, dt, amp);
       frog.update(dt, t, look, amp);

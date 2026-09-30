@@ -12,7 +12,7 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { Journey } from "@/scene/journey";
 import { motion, setLineResolution } from "@/scene/materials";
-import { buildPond, type Tier } from "@/scene/pond";
+import { buildPond, type Pond, type Tier } from "@/scene/pond";
 import { CARD_X, SEABED_Y, STOPS, SURF, type P3 } from "@/scene/stops";
 import { anchorEls, ANCHORS, DepthGauge, SceneOverlay } from "./SceneOverlay";
 
@@ -32,6 +32,37 @@ function useReducedMotion() {
 }
 
 const tmp = new THREE.Vector3();
+
+// ── click-to-explore: what is under the pointer? ──────────────────────────────
+/** Page UI that keeps its own clicks; everything else is "the pond". */
+const UI = "a,button,input,textarea,select,label,form,article,nav,[role=dialog],[data-ui],[data-hero] h1,[data-hero] p";
+type Hit = { kind: "frog" } | { kind: "terrace"; stop: number } | { kind: "ground"; p: THREE.Vector3 } | { kind: "water"; p: THREE.Vector3 };
+const ray = new THREE.Raycaster(); ray.layers.enableAll();
+const ndc = new THREE.Vector2(), onPlane = new THREE.Vector3(), plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+const PIER = { x0: 10.6, x1: 17.6, y: 0.64 }; // planks, top surface
+function hitTest(cx: number, cy: number, camera: THREE.Camera, pond: Pond): Hit | null {
+  ndc.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
+  if (ray.intersectObject(pond.frog.root, true).length) return { kind: "frog" };
+  if (camera.position.y < SURF + 2) return null; // underwater: only the frog is clickable
+  const ti = pond.terraces.findIndex((g) => ray.intersectObject(g, true).length > 0);
+  if (ti >= 0) return { kind: "terrace", stop: ti + 1 };
+  const at = (y: number) => { plane.constant = -y; return ray.ray.intersectPlane(plane, onPlane) ? onPlane.clone() : null; };
+  const pier = at(PIER.y);
+  if (pier && pier.x > PIER.x0 && pier.x < PIER.x1 && pier.z > -1.6 && pier.z < 0.8) return { kind: "ground", p: pier.set(pier.x, PIER.y, -0.3) };
+  const g = at(0);
+  if (g && g.x > -40 && g.x < 9.3 && g.z > -3.3 && g.z < 2.5) return { kind: "ground", p: g.set(g.x, 0, THREE.MathUtils.clamp(g.z, -1.8, 1.6)) };
+  const w = at(SURF);
+  if (w && Math.abs(w.x) < 90 && w.z < 30 && w.z > -40) return { kind: "water", p: w };
+  return null;
+}
+/** A short-lived DOM effect at the click point: a ring for the ground, a word for the frog and the water. */
+function ping(x: number, y: number, text?: string) {
+  const el = document.createElement("div");
+  el.className = text ? "pond-word" : "pond-ring"; if (text) el.textContent = text;
+  el.style.left = `${x}px`; el.style.top = `${y}px`; el.setAttribute("aria-hidden", "true");
+  document.body.appendChild(el); el.addEventListener("animationend", () => el.remove());
+}
+const RIBBITS = ["ribbit!", "hi there!", "boing!", "ribbit ribbit", "✨", "hop hop!"];
 const want = { pos: new THREE.Vector3(), look: new THREE.Vector3() };
 const wpos = new THREE.Vector3(), wlook = new THREE.Vector3();
 
@@ -129,6 +160,69 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
     return () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("note-sent", onSent); };
   }, [gl, pond, camera, composer, journey]);
 
+  // click to explore: terraces and the ground call the frog over, the frog jumps, the water splashes
+  useEffect(() => {
+    const free = (e: MouseEvent) => !(e.target as Element | null)?.closest?.(UI) && !getSelection()?.toString();
+    const go = (stop: number) => { journey.goToStop(stop); scrollToVH(STOPS[stop].at); };
+    const onClick = (e: MouseEvent) => {
+      if (drag.moved) { drag.moved = false; return; } // the end of a drag is not a click
+      if (!free(e)) return;
+      const h = hitTest(e.clientX, e.clientY, camera, pond); if (!h) return;
+      if (h.kind === "frog") { journey.poke(); ping(e.clientX, e.clientY - 24, journey.underwater ? "blub!" : RIBBITS[Math.floor(Math.random() * RIBBITS.length)]); }
+      else if (h.kind === "terrace") go(h.stop);
+      else if (h.kind === "ground") { journey.hopTo(h.p); ping(e.clientX, e.clientY); }
+      else { pond.underwater.splash(h.p.x, h.p.z); ping(e.clientX, e.clientY - 16, "splash!"); }
+    };
+    // drag to travel: sideways on land (the path runs left → right), up/down in the water; a flick keeps gliding.
+    // Phones: vertical swipes stay native; sideways swipes on land also move along the path.
+    const root = document.documentElement;
+    const drag = { on: false, moved: false, id: -1, x: 0, y: 0, vx: 0, vy: 0, t: 0, touch: false };
+    const lenis = () => (window as unknown as { __lenis?: Lenis }).__lenis;
+    const scrollBy = (d: number, glide = 0) => {
+      const l = lenis(), y = Math.max(0, (l ? l.targetScroll : window.scrollY) + d);
+      if (l) l.scrollTo(y, glide ? { duration: glide } : { immediate: true }); else window.scrollTo({ top: y, behavior: glide ? "smooth" : "auto" });
+    };
+    const onLand = () => camera.position.y > SURF + 2;
+    // screen motion → scroll distance: pulling the scene left (or up) moves forward along the path
+    const along = (dx: number, dy: number) => onLand() ? (Math.abs(dx) > Math.abs(dy) ? -dx * 1.6 : -dy) : -dy * 1.4;
+    const onDown = (e: PointerEvent) => {
+      if (!e.isPrimary || (e.pointerType === "mouse" && e.button !== 0) || !free(e)) return;
+      Object.assign(drag, { on: true, moved: false, id: e.pointerId, x: e.clientX, y: e.clientY, vx: 0, vy: 0, t: e.timeStamp, touch: e.pointerType !== "mouse" });
+    };
+    const onDrag = (e: PointerEvent) => {
+      if (!drag.on || e.pointerId !== drag.id) return;
+      const dx = e.clientX - drag.x, dy = e.clientY - drag.y, dt = Math.max(1, e.timeStamp - drag.t);
+      if (!drag.moved && Math.hypot(dx, dy) < 6) return;
+      // touch: only take over sideways swipes on land; the browser already scrolls vertical ones
+      if (drag.touch && (!onLand() || Math.abs(dx) < Math.abs(dy))) { drag.on = false; return; }
+      drag.moved = true; root.classList.add("pond-dragging");
+      scrollBy(along(dx, dy));
+      drag.vx = dx / dt; drag.vy = dy / dt; drag.x = e.clientX; drag.y = e.clientY; drag.t = e.timeStamp;
+    };
+    const onUp = (e: PointerEvent) => {
+      if (!drag.on || e.pointerId !== drag.id) return;
+      drag.on = false; root.classList.remove("pond-dragging");
+      if (drag.moved && e.timeStamp - drag.t < 80) { const fling = THREE.MathUtils.clamp(along(drag.vx, drag.vy) * 150, -0.8 * innerHeight, 0.8 * innerHeight); if (Math.abs(fling) > 30) scrollBy(fling, 0.9); }
+      if (drag.touch) drag.moved = false; // touch has no trailing click to swallow when nothing was tapped
+    };
+    let last = 0;
+    const onHover = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse" || drag.on || e.timeStamp - last < 50) return; last = e.timeStamp;
+      const bg = free(e), h = bg ? hitTest(e.clientX, e.clientY, camera, pond) : null;
+      root.classList.toggle("pond-hover", !!h && h.kind !== "water");
+      root.classList.toggle("pond-grab", bg && !(h && h.kind !== "water"));
+    };
+    const onTerrace = (e: Event) => go((e as CustomEvent<number>).detail);
+    const on: [string, EventListener][] = [["click", onClick as EventListener], ["pointerdown", onDown as EventListener], ["pointermove", onDrag as EventListener],
+      ["pointermove", onHover as EventListener], ["pointerup", onUp as EventListener], ["pointercancel", onUp as EventListener], ["pond-go", onTerrace]];
+    for (const [n, f] of on) window.addEventListener(n, f);
+    root.classList.add("pond-drag"); // CSS: touch-action + no text selection on the scene while dragging
+    return () => {
+      for (const [n, f] of on) window.removeEventListener(n, f);
+      root.classList.remove("pond-hover", "pond-grab", "pond-dragging", "pond-drag");
+    };
+  }, [camera, pond, journey]);
+
   useFrame((_, delta) => {
     const amp = reduced ? 0 : 1;
     if (!reduced) clock.current += Math.min(delta, 0.1);
@@ -167,7 +261,7 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
     for (const a of ANCHORS) {
       const el = anchorEls.get(a.id); if (!el) continue;
       const w = a.show.when;
-      let on = w === "always" ? true : w === "seen" ? journey.seen >= a.show.stop : w === "current" ? journey.reached === a.show.stop : arrived && journey.reached === a.show.stop;
+      let on = w === "always" ? true : w === "seen" ? journey.seen >= a.show.stop : w === "current" ? journey.reached === a.show.stop && !journey.roaming : arrived && journey.reached === a.show.stop;
       if (a.zone === "land" && camera.position.y < SURF + 2) on = false; // land labels belong above the water
       el.dataset.on = String(on);
       if (tier.mobile && a.pinOnMobile) continue;

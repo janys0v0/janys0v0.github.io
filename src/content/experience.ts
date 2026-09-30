@@ -33,7 +33,6 @@ export const experience: Experience[] = [
     summary: "Built AI forecasting tools and agents for an investment firm.",
     link: { label: "Watch on LinkedIn", href: "https://www.linkedin.com/feed/update/urn:li:ugcPost:7490130801372794880/" },
     photos: [
-      { src: "/work/bam-meeting.jpg", alt: "Janys presenting to colleagues around a meeting table", focus: "50% 24%" },
       { src: "/work/bam-interview.jpg", alt: "Janys in an interview, captioned Commodities Data Science Intern", focus: "50% 22%" },
     ],
   },

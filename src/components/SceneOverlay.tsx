@@ -82,10 +82,11 @@ export function SceneOverlay({ mobile }: { mobile: boolean }) {
   return (
     <div className="pointer-events-none absolute inset-0 z-[5] overflow-hidden">
       {terraces.map((t) => (
-        <span key={t.id} ref={reg(`t-${t.id}`)} aria-hidden style={offscreen} data-on="true"
-          className={`${base} whitespace-nowrap rounded-full border border-tech/40 bg-[#060818]/80 px-3 py-1 font-mono text-[12px] sm:text-[14px] tracking-[0.16em] text-[#f1eeff] uppercase`}>
+        <button key={t.id} ref={reg(`t-${t.id}`)} style={offscreen} data-on="true" aria-label={`Hop to ${t.label}`}
+          onClick={() => window.dispatchEvent(new CustomEvent("pond-go", { detail: stopIndex(t.id) }))}
+          className={`${base} pointer-events-auto cursor-pointer whitespace-nowrap rounded-full border border-tech/40 bg-[#060818]/80 px-3 py-1 font-mono text-[12px] sm:text-[14px] tracking-[0.16em] text-[#f1eeff] uppercase hover:border-frog hover:text-white hover:shadow-[0_0_14px_rgba(57,255,136,0.5)]`}>
           {t.label}
-        </span>
+        </button>
       ))}
       {terraces.map((t) => (
         <div key={t.id} ref={reg(`c-${t.id}`)} data-on="false" style={offscreen}

@@ -58,3 +58,15 @@ html[data-banner] .chat-panel, html[data-banner] .pointer-events-none.absolute.i
 html[data-banner], html[data-banner] body { overflow: hidden; }
 html[data-banner] main { height: 100vh !important; }
 html[data-banner] main > div.fixed { position: fixed; inset: 0; width: 100vw; height: 100vh; }
+
+/* click-to-explore feedback (PondCanvas): a ring where the frog will land, a word that floats up */
+html.pond-grab, html.pond-grab body { cursor: grab; }
+html.pond-hover, html.pond-hover body { cursor: pointer; }
+html.pond-dragging, html.pond-dragging body { cursor: grabbing; user-select: none; }
+/* phones: the browser keeps vertical swipes (native momentum); sideways swipes come to the page as a drag */
+html.pond-drag main { touch-action: pan-y; }
+.pond-ring, .pond-word { position: fixed; z-index: 30; pointer-events: none; transform: translate(-50%, -50%); }
+.pond-ring { width: 46px; height: 18px; border: 2px solid var(--color-frog); border-radius: 50%; box-shadow: 0 0 12px var(--color-frog); animation: pond-ring 0.7s ease-out forwards; }
+.pond-word { font-family: var(--font-jetbrains), monospace; font-size: 14px; color: var(--color-frog); text-shadow: 0 0 10px var(--color-frog); white-space: nowrap; animation: pond-word 0.9s ease-out forwards; }
+@keyframes pond-ring { from { opacity: 1; transform: translate(-50%, -50%) scale(0.4); } to { opacity: 0; transform: translate(-50%, -50%) scale(1.6); } }
+@keyframes pond-word { from { opacity: 0; transform: translate(-50%, -30%); } 20% { opacity: 1; } to { opacity: 0; transform: translate(-50%, -160%); } }

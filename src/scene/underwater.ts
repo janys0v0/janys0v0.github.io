@@ -8,7 +8,7 @@ import { ANIMAL_X, EXP_DEPTHS, SEABED_Y, SURF } from "./stops";
 
 export type Underwater = {
   update: (t: number, dt: number, amp: number, activeExp: string | null, camY: number) => void;
-  splash: (x: number) => void;
+  splash: (x: number, z?: number) => void;
   launchBottle: () => void;
   fog: { color: THREE.Color; near: number; far: number };
 };
@@ -85,8 +85,8 @@ export function buildUnderwater(scene: THREE.Scene, tier: { low: boolean }, soft
   // splash: rings spreading on the surface + a few droplet streaks
   const splashes: { g: THREE.Group; t: number }[] = [];
   const ringMat = lineMat("#bff6ff", { width: 2.2, k: 2, opacity: 1 });
-  const splash = (x: number) => {
-    const g = new THREE.Group(); g.position.set(x, SURF + 0.05, 0); scene.add(g);
+  const splash = (x: number, z = 0) => {
+    const g = new THREE.Group(); g.position.set(x, SURF + 0.05, z); scene.add(g);
     for (const r of [0.8, 1.6, 2.5]) segments(g, toSegs(ringPts(r, 48)), ringMat);
     const drops: number[] = [];
     for (let i = 0; i < 10; i++) { const a = (i / 10) * Math.PI * 2; drops.push(Math.cos(a) * 0.3, 0, Math.sin(a) * 0.3, Math.cos(a) * 0.9, 1.4 + (i % 3) * 0.5, Math.sin(a) * 0.9); }

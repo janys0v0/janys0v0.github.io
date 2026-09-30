@@ -36,6 +36,9 @@ export class Journey {
   private splashed = false;
   private idleT = 0;
   private redirect = false;
+  /** A clicked stop wins over scroll until the page's smooth scroll catches up with it (or 2.5 s pass). */
+  private pin = -1;
+  private pinUntil = 0;
 
   constructor(private frog: Frog) {
     this.pos = new THREE.Vector3(...STOPS[0].pos);
@@ -45,8 +48,26 @@ export class Journey {
   setScroll(scrollVH: number) {
     let t = 0;
     for (let i = 0; i < STOPS.length; i++) if (scrollVH + 0.2 >= STOPS[i].at) t = i;
+    if (this.pin >= 0) { if (t !== this.pin && performance.now() < this.pinUntil) return; this.pin = -1; }
     this.goTo(t);
   }
+
+  /** A click on a terrace: hop straight there while the page scrolls to match (no stop-by-stop detour). */
+  goToStop(t: number) { this.pin = t; this.pinUntil = performance.now() + 2500; this.goTo(t); }
+
+  /** A click on the ground: hop to that spot. Scrolling again sends the frog back along its path. */
+  hopTo(p: THREE.Vector3) {
+    if (this.underwater || under(p)) return;
+    this.target = -1; this.pin = -1;
+    this.queue = [{ p: p.clone(), stop: -1 }];
+    if (this.move && this.phase !== "idle") this.redirect = true;
+  }
+
+  /** A click on the frog: a happy jump on the spot (on land). */
+  poke() { if (this.phase === "idle" && !this.underwater) this.queue = [{ p: this.pos.clone(), stop: -1 }]; }
+
+  /** True after a ground click, until scrolling or a terrace click puts the frog back on its path. */
+  get roaming() { return this.target === -1; }
 
   /** Re-plan from where the frog is right now: no queue of past scroll steps, skipped stops are skipped,
    *  and a change of direction turns the frog around mid-move. */
