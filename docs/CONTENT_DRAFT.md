@@ -41,12 +41,9 @@ Deeper water = further back in time.
 ### 3.1 Balyasny Asset Management (BAM): Summer Associate, Data Scientist ✅
 - **When / where:** Jun – Aug 2026 · New York City
 - **Client animal:** octopus (from your BAM sketch)
-- **Problem bubble** 🔎: "Can we trust our forecasts, faster?"
+- **Problem bubble** ✅: "Can we trust our forecasts, faster?"
 - **Tada bubble** ✅: "AI agents that test and explain models in minutes."
-- **Card** ✅:
-  - Built AI forecasting tools and agents for an investment firm.
-  - Built AI agents that test and explain models.
-  - Presented the work to technical and non-technical partners.
+- **Card** ✅: Built AI forecasting tools and agents for an investment firm. *(Details kept off the public repo.)*
 - **Tags:** Agentic AI · Forecasting · Model Evaluation · Stakeholder communication
 - **Media:** video link ❓ *(your sketch shows "Video Link", so what is the URL? Check that it's cleared for public sharing.)*
 
