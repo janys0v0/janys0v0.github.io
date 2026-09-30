@@ -6,7 +6,7 @@ Janys (Jiayang) Li's portfolio: a neon frog hops across skill terraces, dives in
 
 ```bash
 pnpm install
-pnpm dev            # http://localhost:3000  (add ?motion to force animation on if your OS has "reduce motion" enabled)
+pnpm dev            # http://localhost:3000  (motion is always on; add ?still to freeze it)
 pnpm build          # static export into ./out
 scripts/visual-check.sh /tmp/shots   # screenshots of every stop, desktop + phone
 ```
@@ -29,4 +29,4 @@ create a form at formspree.io, then in GitHub → Settings → Secrets and varia
 
 ## Test switches (harmless in production)
 
-`?motion` force animation on · `?shot=N` jump to stop N · `?ask` open the chat · `?theme=dusk` dusk sky · `?q=low` phone-quality scene
+`?still` freeze motion · `?shot=N` jump to stop N · `?ask` open the chat · `?theme=dusk` dusk sky · `?q=low` phone-quality scene

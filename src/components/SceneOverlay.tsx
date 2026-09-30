@@ -35,12 +35,12 @@ export const ANCHORS: Anchor[] = [
 const ANIMAL_EMOJI = { octopus: "🐙", turtle: "🐢", flyingFish: "🐟", starfish: "⭐", crab: "🦀", jellyfish: "🪼" } as const;
 
 /** A small framed "window" at the top of each card: title bar + photo(s), or the client animal until photos are added.
- *  Several photos crossfade slowly; reduced-motion shows the first one only. */
+ *  Several photos crossfade slowly. */
 function PhotoWindow({ e, mobile }: { e: (typeof experience)[number]; mobile: boolean }) {
   const photos = e.photos ?? [];
   const [i, setI] = useState(0);
   useEffect(() => {
-    if (photos.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (photos.length < 2) return;
     const t = window.setInterval(() => setI((n) => (n + 1) % photos.length), 4200);
     return () => window.clearInterval(t);
   }, [photos.length]);

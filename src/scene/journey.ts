@@ -64,7 +64,7 @@ export class Journey {
     if (m && this.phase !== "idle") this.redirect = true; // turn around now instead of finishing the old move
   }
 
-  /** Jump straight to a stop (no animation). Used for reduced motion and visual tests. */
+  /** Jump straight to a stop (no animation). Used for ?still and visual tests. */
   snapTo(t: number) {
     this.pos.set(...STOPS[t].pos); this.reached = this.target = t; this.seen = Math.max(this.seen, t);
     this.queue = []; this.move = null; this.phase = "idle";

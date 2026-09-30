@@ -68,7 +68,7 @@ export class Frog {
   setPose(p: FrogPose) { this.pose = p; }
   get currentPose() { return this.pose; }
 
-  /** dt/t in seconds; look = pointer in [-1,1]²; amp 0 disables idle life (reduced motion). */
+  /** dt/t in seconds; look = pointer in [-1,1]²; amp 0 disables idle life (?still). */
   update(dt: number, t: number, look = { x: 0, y: 0 }, amp = 1) {
     dt = Math.min(dt, 1 / 30); // never explode after a tab switch
     const target = POSES[this.pose];

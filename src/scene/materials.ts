@@ -14,7 +14,7 @@ export const C = {
 
 export const glow = (hex: string, k = 1.8) => new THREE.Color(hex).multiplyScalar(k);
 
-/** One clock for all ambient motion. `amp` = 0 freezes ambient motion (prefers-reduced-motion). */
+/** One clock for all ambient motion. `amp` = 0 freezes ambient motion (?still). */
 export const motion = { uTime: { value: 0 }, uAmp: { value: 1 } };
 
 // ── the water's wave field (GLSL + an identical JS twin for CPU-placed objects) ──

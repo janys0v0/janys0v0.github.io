@@ -24,13 +24,10 @@ const LAND: Record<"desktop" | "mobile", Cam> = {
 const CUE: Record<string, string> = { hub: "SCROLL TO HOP →", ai: "KEEP HOPPING →", product: "KEEP HOPPING →", data: "TO THE PIER →", ledge: "SCROLL TO DIVE ↓", acme: "TO THE SEABED ↓", chat: "" };
 const cueFor = (i: number) => CUE[STOPS[i].id] ?? "SCROLL TO SWIM ↓";
 
+/** Motion is always on (the OS "reduce motion" setting is ignored on purpose); ?still freezes it for testing. */
 function useReducedMotion() {
   const [reduced, set] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (new URLSearchParams(location.search).has("motion")) return; // debug: force motion on for testing
-    set(mq.matches); const on = () => set(mq.matches); mq.addEventListener("change", on); return () => mq.removeEventListener("change", on);
-  }, []);
+  useEffect(() => { set(new URLSearchParams(location.search).has("still")); }, []);
   return reduced;
 }
 
