@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CookieSettingsLink } from "@/components/Analytics";
 import { SiteNav } from "@/components/HeroOverlay";
 import { experience } from "@/content/experience";
 import { profile } from "@/content/profile";
@@ -69,6 +70,7 @@ export default function Overview() {
             <a className="rounded-xl border border-[#3d7bff] px-4 py-2.5 text-[#9dc0ff]" href={`mailto:${profile.email}`}>✉ Email me</a>
           </div>
         </section>
+        <footer className="mt-14"><CookieSettingsLink /></footer>
       </div>
     </main>
   );

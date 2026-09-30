@@ -3,6 +3,7 @@ import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "@/app/globals.css";
 import { profile } from "@/content/profile";
 import { AskFrog } from "@/components/AskFrog";
+import { Analytics } from "@/components/Analytics";
 import { themeScript } from "@/components/ThemeToggle";
 
 const grotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-grotesk", display: "swap" });
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="/overview" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-frog focus:px-4 focus:py-2 focus:text-ink">Skip to all content (text version)</a>
         {children}
         <AskFrog />
+        <Analytics />
       </body>
     </html>
   );

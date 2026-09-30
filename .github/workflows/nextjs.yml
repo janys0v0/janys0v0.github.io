@@ -78,6 +78,8 @@ jobs:
         env:
           # optional: set a repository variable FORMSPREE_ID to send contact notes through Formspree
           NEXT_PUBLIC_FORMSPREE_ID: ${{ vars.FORMSPREE_ID }}
+          # optional: set a repository variable GA_ID (G-XXXXXXXXXX) to turn on Google Analytics (opt-in banner)
+          NEXT_PUBLIC_GA_ID: ${{ vars.GA_ID }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
