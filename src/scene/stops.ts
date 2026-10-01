@@ -17,7 +17,7 @@ export const ANIMAL_X = 16.5, FROG_X = 28.5, CARD_X = 22.5;
 export const EXP_DEPTHS = [-8, -16, -24, -32, -40, -48];
 export const SEABED_Y = -56;
 
-const EXP_IDS = ["bam", "harvard-grid", "cathay", "isf", "ekimetrics", "acme"];
+const EXP_IDS = ["bam", "harvard-grid", "isf", "cathay", "ekimetrics", "acme"]; // same order as content/experience.ts
 
 export const STOPS: Stop[] = [
   { id: "hub", kind: "land", pos: [-11.8, 0, 0.3], at: 0 },

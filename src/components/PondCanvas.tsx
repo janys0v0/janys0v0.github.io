@@ -140,7 +140,7 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
     gsap.registerPlugin(ScrollTrigger);
     ScrollTrigger.config({ ignoreMobileResize: true }); // iOS address-bar resizes must not move the frog
     // inertial smooth scrolling for wheels and trackpads (touch keeps the phone's native momentum)
-    const lenis = reduced ? null : new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, smoothWheel: true });
+    const lenis = reduced ? null : new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, smoothWheel: true, gestureOrientation: "both" }) // trackpad sideways swipes travel too;
     const raf = (time: number) => lenis?.raf(time * 1000);
     if (lenis) { lenis.on("scroll", ScrollTrigger.update); gsap.ticker.add(raf); gsap.ticker.lagSmoothing(0); (window as unknown as { __lenis?: Lenis }).__lenis = lenis; }
     const read = () => { scrollVH.current = window.scrollY / window.innerHeight; journey.setScroll(scrollVH.current); };
@@ -213,8 +213,14 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
       root.classList.toggle("pond-grab", bg && !(h && h.kind !== "water"));
     };
     const onTerrace = (e: Event) => go((e as CustomEvent<number>).detail);
+    // arrow keys on land: → / ← hop to the next / previous stop (↑ ↓ keep scrolling as usual)
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.key !== "ArrowRight" && e.key !== "ArrowLeft") || e.altKey || e.metaKey || e.ctrlKey || !onLand()) return;
+      if ((e.target as Element | null)?.closest?.("input,textarea,select,[contenteditable]")) return;
+      e.preventDefault(); go(THREE.MathUtils.clamp(journey.reached + (e.key === "ArrowRight" ? 1 : -1), 0, STOPS.length - 1));
+    };
     const on: [string, EventListener][] = [["click", onClick as EventListener], ["pointerdown", onDown as EventListener], ["pointermove", onDrag as EventListener],
-      ["pointermove", onHover as EventListener], ["pointerup", onUp as EventListener], ["pointercancel", onUp as EventListener], ["pond-go", onTerrace]];
+      ["pointermove", onHover as EventListener], ["pointerup", onUp as EventListener], ["pointercancel", onUp as EventListener], ["pond-go", onTerrace], ["keydown", onKey as EventListener]];
     for (const [n, f] of on) window.addEventListener(n, f);
     root.classList.add("pond-drag"); // CSS: touch-action + no text selection on the scene while dragging
     return () => {
