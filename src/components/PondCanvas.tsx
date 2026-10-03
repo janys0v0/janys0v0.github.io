@@ -140,7 +140,11 @@ function World({ tier, onStop }: { tier: Tier; onStop: (i: number, underwater: b
     gsap.registerPlugin(ScrollTrigger);
     ScrollTrigger.config({ ignoreMobileResize: true }); // iOS address-bar resizes must not move the frog
     // inertial smooth scrolling for wheels and trackpads (touch keeps the phone's native momentum)
-    const lenis = reduced ? null : new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, smoothWheel: true, gestureOrientation: "both" }) // trackpad sideways swipes travel too;
+    const lenis = reduced ? null : new Lenis({
+      lerp: 0.085, smoothWheel: true, gestureOrientation: "both", // trackpad sideways swipes travel too
+      // separate speeds: up/down calmer, sideways quicker (a sideways swipe is shorter than a vertical one)
+      virtualScroll: (d) => { d.deltaY *= 0.6; d.deltaX *= 2; return true; },
+    });
     const raf = (time: number) => lenis?.raf(time * 1000);
     if (lenis) { lenis.on("scroll", ScrollTrigger.update); gsap.ticker.add(raf); gsap.ticker.lagSmoothing(0); (window as unknown as { __lenis?: Lenis }).__lenis = lenis; }
     const read = () => { scrollVH.current = window.scrollY / window.innerHeight; journey.setScroll(scrollVH.current); };
